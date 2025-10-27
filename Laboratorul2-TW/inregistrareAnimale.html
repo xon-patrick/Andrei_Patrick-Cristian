@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inregistrare Animale</title>
+    <link rel="stylesheet" href="inregistrareAnimale.css">
+</head>
+<body>
+    <main class="container">
+        <h1>Formular de inregistrare animale</h1>
+
+        <p class="introd">
+            Completati formularul pentru a inregistra animalul la clinica noastra. Datele ne ajuta sa oferim ingrijire corecta.
+        </p>
+        <center>
+            <form class="form-card">
+            <div class="row">
+                <label for="stapan">Nume stăpân</label>
+                <input id="stapan" name="stapan" type="text" required>
+            </div>
+
+            <div class="row">
+                <label for="telefon">Telefon</label>
+                <input id="telefon" name="telefon" type="tel" placeholder="07xx xxx xxx" required>
+            </div>
+
+            <div class="row">
+                <label for="nume-animal">Nume animal</label>
+                <input id="nume-animal" name="nume_animal" type="text" required>
+            </div>
+
+            <div class="row">
+                <label for="specie">Specie</label>
+                <select id="specie" name="specie" required>
+                    <option value="">-- Alege --</option>
+                    <option value="Câine">Caine</option>
+                    <option value="Pisică">Pisica</option>
+                    <option value="Iepure">Iepure</option>
+                    <option value="Porcusor de Guinea">Porcusor de Guinea</option>
+                    <option value="Hamster">Hamster</option>
+                    <option value="Altul">Altul</option>
+                </select>
+            </div>
+
+            <fieldset class="row sex-group">
+                <legend>Sexul animalului</legend>
+                <label><input type="radio" name="sex" value="M" required> Mascul</label>
+                <label><input type="radio" name="sex" value="F"> Femelă</label>
+            </fieldset>
+
+            <fieldset class="row services-group">
+                <legend>Servicii dorite</legend>
+                <label><input type="checkbox" name="servicii" value="Vaccinare"> Vaccinare</label>
+                <label><input type="checkbox" name="servicii" value="Deparazitare"> Deparazitare</label>
+                <label><input type="checkbox" name="servicii" value="Consult"> Consult</label>
+            </fieldset>
+
+            <div class="row">
+                <label for="observatii">Observații</label>
+                <textarea id="observatii" name="observatii" rows="4" placeholder="Alergii, tratamente curente etc."></textarea>
+            </div>
+
+            <div class="row buttons">
+                <button type="submit" class="btn btn-submit">Trimite</button>
+                <button type="reset" class="btn btn-reset">Reseteaza</button>
+            </div>
+        </form>
+        </center>
+    </main>
+</body>
+</html>
