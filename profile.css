@@ -1,0 +1,286 @@
+/* ...existing code... */
+body { 
+    background:#0d0d0d;
+    color:#f5f5f5;
+}
+
+.logo {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #f5f5f5;
+  letter-spacing: 1px;
+  text-decoration: none;
+}
+
+.logo span {
+  color: #ff4444;
+  text-decoration: none;
+}
+
+.profileMain{
+  max-width:1100px;
+  margin: 120px auto 40px; 
+  padding: 0 20px;
+}
+
+
+.profileTop{
+  display:flex;
+  gap:2rem;
+  align-items:center;
+  margin-bottom:1.5rem;
+  flex-wrap:wrap;
+}
+
+.profileCard{
+  display:flex;
+  gap:1.25rem;
+  align-items:center;
+  background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+  padding:1rem 1.25rem;
+  border-radius:8px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.6);
+  flex:1 1 560px;
+}
+
+.profilePhoto{
+  width:120px;
+  height:120px;
+  border-radius:8px;
+  object-fit:cover;
+  border:3px solid rgba(255,255,255,0.06);
+}
+
+.profileInfo .profileName{
+  font-size:1.6rem;
+  margin-bottom:0.25rem;
+}
+
+
+.editBtn{
+  background:#1a1a1a;
+  color:#9ab;
+  border:1px solid rgba(255,255,255,0.04);
+  padding:0.5rem 0.9rem;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+.editBtn:hover{ 
+    background:rgba(255,68,68,0.08);
+    color:#fff;
+    border-color:#ff4444;
+}
+
+/* stats */
+.profileStats{
+  display:flex;
+  gap:1rem;
+  align-items:stretch;
+  flex:0 0 380px;
+  justify-content:space-between;
+}
+
+.stat{
+  background:#1a1a1a;
+  padding:12px 16px;
+  border-radius:8px;
+  text-align:center;
+  min-width:80px;
+}
+
+.statNumber{
+  font-size:1.6rem;
+  font-weight:700;
+  color:#fff;
+}
+
+.statLabel{
+  font-size:0.85rem;
+  color:#9ab;
+  margin-top:4px;
+}
+
+.favourites{ margin-top:1.25rem; }
+.favourites h2{ color:#9ab; margin-bottom:0.8rem; }
+
+.movie-grid{
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap:1.5rem;
+}
+
+.movie-grid.small-grid{
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap:1rem;
+}
+.movie-card p{
+    font-size:0.9rem;
+    padding:0.5rem 0.6rem;
+}
+
+.calendarHeader,
+.calendarRow {
+  display: grid;
+  grid-template-columns: 56px 52px minmax(220px, 1fr) 76px 120px 44px 44px 72px;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+  background: transparent;
+}
+
+.calendarHeader {
+  color: #9ab;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  background: rgba(255,255,255,0.01);
+}
+
+.watchCalendar { margin-top: 1.8rem; }
+.watchCalendar h2 {
+    color: #9ab;
+    margin-bottom: 12px;
+    font-size: 1.1rem;}
+
+.monthGroup {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.monthBadge {
+  width: 72px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+  border-radius: 8px;
+  padding: 8px 6px;
+  text-align: center;
+  flex-shrink: 0;
+  border: 1px solid rgba(255,255,255,0.03);
+}
+.monthBadge .mb-month {
+  font-size: 13px;
+  font-weight: 700;
+  color: #cfe6ee;
+  letter-spacing: 1px;
+}
+.monthBadge .mb-year {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #9ab;
+}
+
+
+.monthEntries {
+  flex: 1;
+  background: linear-gradient(180deg, rgba(255,255,255,0.01), transparent);
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.03);
+}
+
+
+.calendarRow:last-child { border-bottom: none; }
+
+
+.col-day {
+  color: #9ab;
+  font-weight: 700;
+  font-size: 20px;
+  text-align: center;
+}
+
+
+.col-thumb img {
+  width: 44px;
+  height: 66px;
+  object-fit: cover;
+  border-radius: 4px;
+  display: block;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.5);
+}
+
+
+.col-title {
+  font-weight: 700;
+  color: #fff;
+  font-size: 1.05rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.col-released {
+  color: #9ab;
+  font-weight: 600;
+  text-align: left;
+}
+
+/* ...existing code... */
+.col-rating .star {
+  display: inline-block;
+  width: 1ch;               
+  text-align: center;
+  font-style: normal;      
+  line-height: 1;
+  color: #444;              
+  margin-right: 6px;
+  vertical-align: middle;
+}
+.col-rating .star::before {
+  content: "★";
+  font-size: 1rem;
+  display: inline-block;
+}
+
+.col-rating .star.filled {
+  color: #2dd47a;
+}
+
+.col-rating .star.half {
+  color: #444;
+  position: relative;
+}
+.col-rating .star.half::before {
+  content: "★";
+  background: linear-gradient(90deg, #2dd47a 50%, #444 50%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.col-rating .star:last-child { margin-right: 0; }
+
+
+.col-rating {
+    display: inline-flex;
+    align-items:center;
+    gap:6px;
+}
+
+.col-like, .col-rewatch {
+  text-align: center;
+  color: #9ab;
+  font-size: 16px;
+}
+
+.col-like { color: #9ab; }
+.col-rewatch { color: #9ab; }
+
+.col-like.liked { color: #ff7b5c; } 
+
+
+.col-actions {
+  text-align: right;
+  color: #9ab;
+  font-size: 14px;
+}
+
+
+.calendarRow:hover {
+  background: rgba(255,255,255,0.01);
+}
+
