@@ -41,6 +41,7 @@ nav {
 .nav-links {
   display: flex;
   gap: 2rem;
+  align-items: center;
 }
 
 .nav-links a {
@@ -48,6 +49,7 @@ nav {
   text-decoration: none;
   font-size: 1rem;
   transition: 0.3s;
+  line-height: 1;
 }
 
 .nav-links a:hover {
@@ -63,6 +65,31 @@ nav {
 .nav-links .signup:hover {
   background-color: #ff4444;
   color: #fff;
+}
+
+.nav-links .profile-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: #f5f5f5;
+  text-decoration: none;
+  padding: 0.15rem 0.25rem;
+  border-radius: 6px;
+  transition: background 0.15s, color 0.15s;
+}
+
+.nav-links .profile-link:hover {
+  background: rgba(255,68,68,0.06);
+  color: #ff4444;
+}
+
+.nav-links .profile-link .avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255,255,255,0.08);
+  display: block;
 }
 
 /* --- home --- */
