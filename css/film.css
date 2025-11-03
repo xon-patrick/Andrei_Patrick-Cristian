@@ -10,6 +10,7 @@ body {
   color: #f5f5f5;
   line-height: 1.5;
   overflow-x: hidden;
+
 }
 
 /* --- navbar --- */
@@ -23,7 +24,7 @@ nav {
   width: 100%;
   top: 0;
   left: 0;  
-  z-index: 100;
+  z-index: 0;
 }
 
 .logo {
@@ -67,7 +68,8 @@ nav {
   color: #fff;
 }
 
-.filmHeader {
+.filmHeader { 
+
   height: 80vh;
   background: linear-gradient(to bottom, rgba(20, 24, 28, 0) 0%, rgba(20, 24, 28, 0.8) 70%, #14181c 100%),
     url("https://a.ltrbxd.com/resized/alternative-backdrop/9/5/1/2/7/7/tmdb/ev06XwWLSoTG2DkLlsllAhlWGsk-1200-1200-675-675-crop-000000.jpg?v=cf6bcc5601&quot") center/cover no-repeat;
