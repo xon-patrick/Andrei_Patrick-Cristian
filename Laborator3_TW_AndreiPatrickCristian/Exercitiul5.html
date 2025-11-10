@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html> 
+<head>
+    <title>Exercitiu 5</title>
+</head>
+<script>
+    let a = 3;
+    let b = 4;
+    let c = 5;
+
+    if (a + b > c && a + c > b && b + c > a) {
+      console.log("Cele 3 laturi pot forma un triunghi!");
+      
+      if (a === b && b === c) {
+        console.log("Triunghiul este echilateral (toate laturile egale).");
+      } else if (a === b || a === c || b === c) {
+        console.log("Triunghiul este isoscel (două laturi egale).");
+      } else {
+        console.log("Triunghiul este oarecare (toate laturile diferite).");
+      }
+
+    } else {
+      console.log("Cele 3 laturi NU pot forma un triunghi!");
+    }
+</script>
+</html>

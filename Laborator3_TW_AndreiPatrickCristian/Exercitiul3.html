@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html> 
+<head>
+    <title>Exercitiu 3</title>
+</head>
+<script>
+    let num = [15, 4, 12, 5, 8];
+    let x;
+
+    console.log("Arrayul initial: " + num);
+
+    for (let i = 0; i < num.length; i++) {
+        for (let j = 0; j < num.length - i - 1; j++) {
+            if (num[j] < num[j + 1]) {
+                x = num[j];
+                num[j] = num[j + 1];
+                num[j + 1] = x;
+            }
+        }
+    }
+
+    console.log("Arrayul sortat descrescator: " + num);
+</script>
+</html>

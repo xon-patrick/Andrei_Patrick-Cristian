@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html> 
+<head>
+    <title>Exercitiu 4</title>
+</head>
+<script>
+    let a = 25;
+    let b = 4;
+    let c = 25;
+    let d = 6;
+
+    console.log("Numerele date sunt: " + a + ", " + b + ", " + c + ", " + d);
+
+    if ((a === c && b === d) || (a === b && c === d) || (a === d && b === c)) {
+      console.log("Cele 4 numere pot reprezenta laturi ale unui dreptunghi!");
+    } else {
+      console.log("Cele 4 numere NU pot reprezenta laturi ale unui dreptunghi!");
+    }
+
+    let e = 13;
+    let f = 17;
+    let g = 13;
+    let h = 17;
+
+    console.log("Numerele date sunt: " + e + ", " + f + ", " + g + ", " + h);
+
+    if ((e === g && f === h) || (e === f && g === h) || (e === h && f === g)) {
+      console.log("Cele 4 numere pot reprezenta laturi ale unui dreptunghi!");
+    } else {
+      console.log("Cele 4 numere NU pot reprezenta laturi ale unui dreptunghi!");
+    }
+
+    let lungime;
+    let latime;
+    if(e === f){
+        lungime = f;
+        latime = g;
+    } else if (e === g){
+        lungime = e;
+        latime = f;
+    } else {
+        lungime = e;
+        latime = g;
+    }
+
+    let arie = lungime * latime;
+    let perimetru = 2 * (lungime + latime);
+
+    console.log('Aria dreptunghiului este:' + arie);
+    console.log('Perimetrul dreptunghiului este: ' + perimetru);
+    
+
+</script>
+</html>
