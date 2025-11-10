@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Discover - Journel</title>
+  <link rel="stylesheet" href="css/discover.css" />
+</head>
+<body>
+  <div id="nav-placeholder"></div>
+  <script src="js/navbar.js" defer></script>
+
+  <header class="discover-header">
+    <h1>Discover New Films</h1>
+    <p>Explore trending movies or search your favorites.</p>
+    <div class="search-container">
+      <input type="text" id="search-input" placeholder="Search for a movie..." />
+      <button id="search-btn">Search</button>
+    </div>
+  </header>
+
+  <section class="movie-section">
+    <h2 id="section-title">Latest Movies</h2>
+    <div class="movie-grid" id="movie-grid">
+      <!-- Movies will be injected here -->
+    </div>
+  </section>
+
+  <footer>
+    © 2025 Journel.
+  </footer>
+
+  <script src="js/discover.js" defer></script>
+</body>
+</html>

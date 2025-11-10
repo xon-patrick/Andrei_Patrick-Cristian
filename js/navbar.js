@@ -37,3 +37,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     backBtn.blur();
   });
 });
+
+const navSearchForm = document.getElementById("navSearchForm");
+const navSearchInput = document.getElementById("navSearchInput");
+
+navSearchForm.addEventListener("submit", function(e) {
+  e.preventDefault();
+  const query = navSearchInput.value.trim();
+  if (!query) return;
+  window.location.href = `discover.html?query=${encodeURIComponent(query)}`;
+});
