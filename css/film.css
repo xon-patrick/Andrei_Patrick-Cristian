@@ -179,56 +179,172 @@ body {
   font-size: 1.2rem;
 }
 
+.filmRating {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 10px 0 14px;
+  padding: 6px 8px;
+}
+
+.filmRating-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.filmStars .star {
+  font-size: 1.25rem;
+  color: #ffffff;
+  opacity: 0.45;
+  margin-right: 2px;
+  text-shadow: 0 1px 0 rgba(0,0,0,0.6);
+}
+.filmStars .star.filled {
+  color: #ff4444; /* red filled star */
+  opacity: 1;
+}
+
+.filmGrade {
+  background: linear-gradient(180deg, #ff6b6b, #ff4444);
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  box-shadow: 0 6px 18px rgba(255,68,68,0.12);
+}
+
+
 /* --- Reviews Section --- */
-.filmReviews {
-  margin-bottom: 3rem;
-}
-
-.filmReviews h2 {
-  font-size: 1.5rem;
-  margin-bottom: 1.5rem;
-  color: #9ab;
-}
-
 .review {
-  background-color: #1a1f24;
-  padding: 1.5rem;
-  border-radius: 4px;
-  margin-bottom: 1rem;
+  padding: 14px;
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.015));
+  margin-bottom: 12px;
+  box-shadow: 0 6px 18px rgba(2,6,23,0.45);
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+.review:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 28px rgba(2,6,23,0.55);
 }
 
 .reviewHeader {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
+  gap: 12px;
+  align-items: flex-start;
+  position: relative; 
+  padding-right: 110px;
 }
+
+.reviewAvatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 2px solid rgba(255,255,255,0.04);
+}
+
 
 .reviewAuthor {
-  font-weight: 600;
+  font-size: 1rem;
+  color: #ffffff;
+  display: inline-block;
+}
+.reviewDate {
+  position: absolute;
+  right: 12px;
+  top: 10px;
+  font-size: 0.85rem;
+  color: #9aa0a6;
+  white-space: nowrap;
+}
+
+.reviewGrade {
+  margin-left: 6px;
+  font-weight: 700;
   color: #fff;
-  font-size: 1.1rem;
+  background: linear-gradient(180deg, #ff6b6b, #ff4444);
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  box-shadow: 0 4px 10px rgba(255,68,68,0.14);
 }
 
-.stars {
-  display: flex;
-  gap: 0.2rem;
+.reviewRating {
+  margin-top: 6px;
 }
-
 .star {
-  color: #444;
-  font-size: 1.2rem;
+  font-size: 1rem;
+  color: #ffffff; 
+  opacity: 0.75;
+  margin-right: 2px;
+  text-shadow: 0 1px 0 rgba(0,0,0,0.5);
 }
-
 .star.filled {
-  color: #ff8800;
+  color: #ff4444; 
+  opacity: 1;
 }
 
 .reviewText {
-  color: #ccc;
-  line-height: 1.7;
+  margin: 10px 0 12px;
+  color: #dfe6ee;
+  line-height: 1.45;
+  font-size: 0.96rem;
+  white-space: pre-wrap;
 }
 
+.review-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.rev-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,0.02);
+  color: #e6eef8;
+  border: 1px solid rgba(255,255,255,0.04);
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background .12s ease, transform .08s ease;
+  user-select: none;
+}
+.rev-btn .count {
+  font-weight: 700;
+  color: #fff;
+  font-size: 0.9rem;
+}
+
+.rev-btn:hover {
+  transform: translateY(-2px);
+  background: rgba(255,255,255,0.03);
+}
+.rev-btn.active {
+  background: linear-gradient(180deg, rgba(255,68,68,0.12), rgba(255,68,68,0.06));
+  border-color: rgba(255,68,68,0.2);
+  box-shadow: 0 6px 18px rgba(255,68,68,0.06) inset;
+}
+
+.rev-btn.like.active { color: #ff6b6b; border-color: rgba(255,107,107,0.18); }
+.rev-btn.dislike.active { color: #8aa0ff; border-color: rgba(138,160,255,0.18); }
+
+.rev-btn.comment { background: rgba(255,255,255,0.01); }
+
+
+@media (max-width: 640px) {
+  .reviewHeader { padding-right: 12px; }
+  .reviewDate { position: static; margin-left: 8px; color: #9aa0a6; order: 2; }
+  .reviewHeader { flex-direction: row; align-items: center; gap: 10px; }
+  .reviewGrade { margin-left: auto; }
+}
 
 /* --- footer--- */
 footer {

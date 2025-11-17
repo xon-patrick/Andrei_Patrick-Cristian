@@ -8,6 +8,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!resp.ok) throw new Error('navbar.html fetch failed: ' + resp.status);
     placeholder.innerHTML = await resp.text();
 
+    const navSearchForm = document.getElementById("navSearchForm");
+    const navSearchInput = document.getElementById("navSearchInput");
+    if (navSearchForm && navSearchInput) {
+      navSearchInput.setAttribute('autocomplete', 'off');
+      navSearchInput.setAttribute('autocorrect', 'off');
+      navSearchInput.setAttribute('autocapitalize', 'off');
+      
+      navSearchForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        const query = navSearchInput.value.trim();
+        if (!query) return;
+        window.location.href = `discover.html?query=${encodeURIComponent(query)}`;
+      });
+    }
 
   } catch (err) {
     console.error('Failed to load navbar.html', err);
@@ -36,14 +50,4 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
     backBtn.blur();
   });
-});
-
-const navSearchForm = document.getElementById("navSearchForm");
-const navSearchInput = document.getElementById("navSearchInput");
-
-navSearchForm.addEventListener("submit", function(e) {
-  e.preventDefault();
-  const query = navSearchInput.value.trim();
-  if (!query) return;
-  window.location.href = `discover.html?query=${encodeURIComponent(query)}`;
 });

@@ -1,14 +1,19 @@
+// ...existing code...
 const API_KEY = "e248a5fff5839613f5ada67376c45422";
 const BASE_URL = "https://api.themoviedb.org/3";
 const IMG_URL = "https://image.tmdb.org/t/p/w500";
 
 const movieGrid = document.getElementById("movie-grid");
-const searchInput = document.getElementById("search-input");
-const searchBtn = document.getElementById("search-btn");
 const sectionTitle = document.getElementById("section-title");
 
 document.addEventListener("DOMContentLoaded", () => {
-  getLatestMovies();
+  const params = new URLSearchParams(window.location.search);
+  const q = params.get("query");
+  if (q) {
+    handleSearch(q);
+  } else {
+    getLatestMovies();
+  }
 });
 
 async function getLatestMovies() {
@@ -35,25 +40,22 @@ async function getLatestMovies() {
   }
 }
 
-searchBtn.addEventListener("click", handleSearch);
-searchInput.addEventListener("keypress", (e) => e.key === "Enter" && handleSearch());
+async function handleSearch(query) {
+  const q = (query || "").trim();
+  if (!q) return;
 
-async function handleSearch() {
-  const query = searchInput.value.trim();
-  if (!query) return;
-  sectionTitle.textContent = `Results for "${query}"`;
+  sectionTitle.textContent = `Results for "${q}"`;
   movieGrid.className = "movie-list";
   movieGrid.innerHTML = `<p class="loading">Searching...</p>`;
 
   try {
-    const res = await fetch(`${BASE_URL}/search/movie?api_key=${API_KEY}&language=en-US&query=${encodeURIComponent(query)}`);
+    const res = await fetch(`${BASE_URL}/search/movie?api_key=${API_KEY}&language=en-US&query=${encodeURIComponent(q)}`);
     const data = await res.json();
-    if (data.results.length === 0) {
+    if (!data.results || data.results.length === 0) {
       movieGrid.innerHTML = `<p>No results found.</p>`;
       return;
     }
 
-    // Sort results by popularity descending
     const sortedResults = data.results.sort((a, b) => b.popularity - a.popularity);
 
     movieGrid.innerHTML = "";
@@ -66,7 +68,6 @@ async function handleSearch() {
   }
 }
 
-// --- Render search results (detailed cards) ---
 async function renderDetailedCard(movie) {
   const poster = movie.poster_path
     ? IMG_URL + movie.poster_path
@@ -76,7 +77,6 @@ async function renderDetailedCard(movie) {
   const rating5 = movie.vote_average ? Math.round(movie.vote_average / 2) : 0;
   const overview = movie.overview ? movie.overview.slice(0, 150) + "..." : "No description available.";
 
-  // Get director
   let director = "Unknown";
   try {
     const credits = await fetch(`${BASE_URL}/movie/${movie.id}/credits?api_key=${API_KEY}`);
@@ -102,5 +102,11 @@ async function renderDetailedCard(movie) {
       </div>
     </div>
   `;
+
+  card.style.cursor = 'pointer';
+  card.addEventListener('click', () => {
+    window.location.href = `film.html?id=${movie.id}`;
+  });
+
   movieGrid.appendChild(card);
 }
