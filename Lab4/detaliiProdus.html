@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Detalii Produs</title>
+    <link rel="stylesheet" href="detalii.css">
+</head>
+<body>
+    <main class="container">
+        <h1>Detalii produs</h1>
+
+        <div class="card produs">
+            <img src="iph17.jpg" alt="iPhone 17" class="produs-imagine">
+            <div class="produs-info">
+                <h2 class="produs-nume">iPhone 17</h2>
+                <button id="btnDetalii" type="button" aria-expanded="false">Afiseaza detalii</button>
+
+                <div id="detalii" class="detalii">
+                    <h3>Ecran:</h3>
+                    <ul>
+                        <li>6.3 inch</li>
+                        <li>120 Hz</li>
+                        <li>Super Retina XDR (OLED)</li>
+                    </ul>
+
+                    <h3>Hardware:</h3>
+                    <ul>
+                        <li>Chip A19</li>
+                        <li>8 GB RAM</li>
+                        <li>256 GB stocare</li>
+                    </ul>
+
+                    <h3>Camere:</h3>
+                    <ul>
+                        <li>Sistem triple-camera: 48 MP wide + 12 MP ultrawide + 12 MP telephoto</li>
+                        <li>Stabilizare optică (OIS) pe senzorul principal</li>
+                        <li>Moduri foto avansate: Night, Portrait, ProRAW</li>
+                        <li>Inregistrare video 4K la 60 fps</li>
+                    </ul>
+
+                    <p>Informatiile sunt valabile la data: <span id="dataProdus"></span>.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="detalii.js" defer></script>
+</body>
+</html>
