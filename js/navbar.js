@@ -4,9 +4,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (!placeholder) return;
 
   try {
-    const resp = await fetch('navbar.html');
-    if (!resp.ok) throw new Error('navbar.html fetch failed: ' + resp.status);
-    placeholder.innerHTML = await resp.text();
+    const resp = await fetch('navbar.php?nocache=' + Date.now(), { credentials: 'same-origin' });
+    if (!resp.ok) throw new Error('navbar.php fetch failed: ' + resp.status);
+    const html = await resp.text();
+    console.debug('navbar.php response:', html);
+    placeholder.innerHTML = html;
 
     const navSearchForm = document.getElementById("navSearchForm");
     const navSearchInput = document.getElementById("navSearchInput");

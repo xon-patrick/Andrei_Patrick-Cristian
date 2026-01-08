@@ -42,6 +42,7 @@ nav {
   display: flex;
   gap: 2rem;
   text-decoration: none;
+  align-items: center;
 }
 
 .nav-links a {
@@ -49,6 +50,38 @@ nav {
   text-decoration: none;
   font-size: 1rem;
   transition: 0.3s;
+}
+
+.nav-links a {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* small circular avatar used in navbar/profile links */
+.nav-links .avatar,
+.profile-link .avatar {
+  width:32px !important;
+  height:32px !important;
+  border-radius:50% !important;
+  object-fit:cover !important;
+  border:1px solid rgba(255,255,255,0.06) !important;
+  margin-right:6px !important;
+  display:inline-block !important;
+  vertical-align:middle !important;
+}
+
+/* More specific selectors to ensure this rule applies across the site */
+nav .nav-links a.profile-link img.avatar,
+nav .nav-links a.account img.avatar,
+nav .nav-links img.avatar {
+  width:32px !important;
+  height:32px !important;
+  border-radius:50% !important;
+  object-fit:cover !important;
+  border:1px solid rgba(255,255,255,0.06) !important;
+  margin-right:6px !important;
+  display:inline-block !important;
+  vertical-align:middle !important;
 }
 
 .nav-links a:hover {
@@ -132,14 +165,59 @@ body { padding-top: 64px; }
   background: #ff4444;
   border: none;
   cursor: pointer;
+  height: 100%;
+  color: #fff; /* ensure icon inherits white */
+}
+.navSearchForm button .search-icon {
+  display: block;
+  font-size: 16px;
+  line-height: 1;
+  color: #fff;
 }
 
 .navSearchForm button:hover {
   background: #ff6666;
 }
 
-.navSearchForm button svg {
-  display: block;
-  width: 16px;
-  height: 16px;
+/* Button-style links in the navbar */
+.nav-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.9rem;
+  height: 36px;
+  border-radius: 28px;
+  font-size: 0.95rem;
+  text-decoration: none;
+  line-height: 1;
+  transition: transform 150ms ease, background 150ms ease, box-shadow 150ms ease, color 150ms ease;
+  cursor: pointer;
+}
+
+/* Subtle outlined login button */
+.nav-btn.login {
+  background: transparent;
+  color: #f5f5f5;
+  border: 1px solid rgba(255,68,68,0.18);
+}
+.nav-btn.signup:hover,
+.nav-btn.signup:focus {
+  background: rgba(255,68,68,0.06);
+  border-color: rgba(255,68,68,0.32);
+  transform: translateY(-1px);
+}
+
+/* Prominent signup button */
+.nav-btn.login {
+  background: linear-gradient(180deg, #ff4444, #ff6666);
+  color: #fff;
+  border: 1px solid rgba(255,68,68,0.18);
+  box-shadow: 0 6px 18px rgba(255,68,68,0.06);
+}
+.nav-btn.login:hover,
+.nav-btn.login:focus {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 30px rgba(255,68,68,0.12);
+  filter: brightness(1.02);
 }

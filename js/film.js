@@ -209,14 +209,134 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
 
+    // helper for POST JSON form-encoded
+    async function postForm(url, data) {
+      const form = new URLSearchParams();
+      for (const k in data) form.append(k, data[k]);
+      const res = await fetch(url, { method: 'POST', body: form, credentials: 'same-origin' });
+      return res.json().catch(() => ({}));
+    }
+
+    // show simple modal
+    function showModal(html) {
+      const overlay = document.createElement('div');
+      overlay.className = 'modal-overlay';
+      overlay.style = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:10000;';
+      const box = document.createElement('div');
+      box.className = 'modal-box';
+      box.style = 'background:#111;padding:18px;border-radius:8px;max-width:720px;width:100%;color:#eee;box-shadow:0 12px 40px rgba(0,0,0,0.6);';
+      box.innerHTML = html;
+      overlay.appendChild(box);
+      document.body.appendChild(overlay);
+      return { overlay, box };
+    }
+
+    // favorite button handling
+    const btnLovedEl = document.getElementById('btnLoved');
+    btnLovedEl.addEventListener('click', async (e) => {
+      const active = btnLovedEl.classList.toggle('active');
+      // if activated, add favorite; else remove
+      if (active) {
+        await postForm('add_favorite.php', { tmdb_id: id, title: details.title || '', poster: details.poster_path ? `${IMG_BASE}w342${details.poster_path}` : '' });
+      } else {
+        await postForm('remove_favorite.php', { tmdb_id: id });
+      }
+    });
+
+    // check and set initial favorite state
+    (async () => {
+      try {
+        const res = await fetch('get_favorites.php', { credentials: 'same-origin' });
+        if (res.ok) {
+          const data = await res.json();
+          const favs = data.favorites || [];
+          if (favs.find(f => String(f.tmdb_id) === String(id))) btnLovedEl.classList.add('active');
+        }
+      } catch (e) { /* ignore */ }
+    })();
+
+    // watched button -> open modal to submit rating and review
     document.getElementById('btnWatched').addEventListener('click', (e) => {
-      e.currentTarget.classList.toggle('active');
+      const html = `
+        <h2 style="margin-top:0">Mark as watched</h2>
+        <p style="color:#ccc">Leave a grade, review and optionally add to favorites or a list.</p>
+        <div style="display:flex;gap:10px;margin:10px 0;align-items:center;">
+          <label style="min-width:120px">Grade (1-10)</label>
+          <select id="watched-grade">${Array.from({length:10}).map((_,i)=>`<option value="${i+1}">${i+1}</option>`).join('')}</select>
+        </div>
+        <div style="margin:10px 0;">
+          <label>Review</label>
+          <textarea id="watched-review" rows="6" style="width:100%;"></textarea>
+        </div>
+        <div style="display:flex;gap:12px;align-items:center;margin-top:8px;">
+          <label><input type="checkbox" id="watched-fav"> Add to favorites</label>
+          <button id="watched-submit" style="margin-left:auto;padding:8px 12px;background:#2b7;color:#041;border-radius:6px;border:none;">Save</button>
+          <button id="watched-cancel" style="padding:8px 12px;background:#333;color:#ddd;border-radius:6px;border:none;">Cancel</button>
+        </div>
+      `;
+      const { overlay, box } = showModal(html);
+      box.querySelector('#watched-cancel').addEventListener('click', () => overlay.remove());
+      box.querySelector('#watched-submit').addEventListener('click', async () => {
+        const grade = box.querySelector('#watched-grade').value;
+        const review = box.querySelector('#watched-review').value;
+        const fav = box.querySelector('#watched-fav').checked ? 1 : 0;
+        // post watched
+        await postForm('add_watched.php', { tmdb_id: id, title: details.title || '', poster: details.poster_path ? `${IMG_BASE}w342${details.poster_path}` : '', rating: grade, liked: fav, notes: review });
+        if (fav) await postForm('add_favorite.php', { tmdb_id: id, title: details.title || '', poster: details.poster_path ? `${IMG_BASE}w342${details.poster_path}` : '' });
+        overlay.remove();
+        // show small transient success
+        const s = document.createElement('div'); s.textContent = 'Saved'; s.style = 'position:fixed;top:18px;left:50%;transform:translateX(-50%);background:#e6ffea;color:#044d18;padding:8px 12px;border-radius:6px;z-index:10001;'; document.body.appendChild(s);
+        setTimeout(()=>s.style.opacity='0',1500); setTimeout(()=>s.remove(),2100);
+      });
     });
-    document.getElementById('btnLoved').addEventListener('click', (e) => {
-      e.currentTarget.classList.toggle('active');
-    });
-    document.getElementById('btnWatchlist').addEventListener('click', (e) => {
-      e.currentTarget.classList.toggle('active');
+
+    // watchlist -> choose list to add
+    document.getElementById('btnWatchlist').addEventListener('click', async (e) => {
+      // fetch user's lists
+      let lists = [];
+      try {
+        const res = await fetch('get_lists.php', { credentials: 'same-origin' });
+        if (res.ok) { const d = await res.json(); lists = d.lists || []; }
+      } catch (err) { /* ignore */ }
+
+      const options = lists.map(l => `<option value="${l.id}">${l.name}</option>`).join('');
+      const html = `
+        <h2 style="margin-top:0">Add to list</h2>
+        <div style="margin:10px 0;">
+          <select id="select-list" style="width:100%">${options}</select>
+        </div>
+        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px;">
+          <button id="create-list" style="padding:8px 12px;background:#368;">New list</button>
+          <button id="add-list" style="padding:8px 12px;background:#2b7;color:#041;">Add</button>
+          <button id="cancel-list" style="padding:8px 12px;background:#333;color:#ddd;">Cancel</button>
+        </div>
+      `;
+      const { overlay, box } = showModal(html);
+      box.querySelector('#cancel-list').addEventListener('click', () => overlay.remove());
+      box.querySelector('#create-list').addEventListener('click', () => {
+        const name = prompt('List name');
+        if (!name) return;
+        postForm('create_list.php', { name }).then(j => {
+          if (j.ok) {
+            // append to select
+            const sel = box.querySelector('#select-list');
+            const opt = document.createElement('option'); opt.value = j.list_id; opt.text = name; sel.appendChild(opt); sel.value = j.list_id;
+          } else alert('Failed to create list');
+        });
+      });
+      box.querySelector('#add-list').addEventListener('click', async () => {
+        const sel = box.querySelector('#select-list');
+        const listId = sel.value;
+        if (!listId) return alert('Select a list');
+        const j = await postForm('add_to_list.php', { list_id: listId, tmdb_id: id, title: details.title || '', poster: details.poster_path ? `${IMG_BASE}w342${details.poster_path}` : '' });
+        if (j.ok) {
+          overlay.remove();
+          const s = document.createElement('div'); s.textContent = 'Added to list'; s.style = 'position:fixed;top:18px;left:50%;transform:translateX(-50%);background:#e6ffea;color:#044d18;padding:8px 12px;border-radius:6px;z-index:10001;'; document.body.appendChild(s);
+          setTimeout(()=>s.style.opacity='0',1500); setTimeout(()=>s.remove(),2100);
+        } else {
+          alert('Failed to add to list');
+        }
+      });
     });
 
   } catch (err) {

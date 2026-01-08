@@ -18,14 +18,29 @@
       <h2>Welcome back</h2>
       <p>Log in to continue your cinematic journey.</p>
 
-      <form>
-        <input type="text" placeholder="Username" required>
-        <input type="password" placeholder="Password" required>
+      <form method="post" action="login.php">
+        <input type="text" name="username" placeholder="Username or email" required>
+        <input type="password" name="password" placeholder="Password" required>
         <button type="submit">Login</button>
       </form>
 
       <p class="signup-text">Don’t have an account? <a href="signup.html">Create one</a></p>
     </div>
   </main>
+  <script>
+    (async () => {
+      try {
+        const res = await fetch('flash.php');
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.flash) {
+          const c = document.createElement('div');
+          c.className = 'flash';
+          c.textContent = data.flash;
+          document.querySelector('.login-container').insertBefore(c, document.querySelector('.login-container').firstChild);
+        }
+      } catch (e) { /* ignore */ }
+    })();
+  </script>
 </body>
 </html>

@@ -1,7 +1,7 @@
 <?php
 // config conexiune – conform docker-compose.yml
 $host = 'mysql'; // numele serviciului din docker-compose (NU localhost)
-$port = 3307;
+$port = 3306;
 $db = 'studenti';
 $user = 'user'; // din MYSQL_USER
 $pass = 'password'; // din MYSQL_PASSWORD

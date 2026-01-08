@@ -18,16 +18,31 @@
       <h2>Create your account</h2>
       <p>Start your cinematic journey with Jurnel.</p>
 
-      <form>
-        <input type="text" placeholder="Username" required>
-        <input type="email" placeholder="Email" required>
-        <input type="password" placeholder="Password" required>
-        <input type="password" placeholder="Confirm Password" required>
+      <form method="post" action="register.php">
+        <input type="text" name="username" placeholder="Username" required>
+        <input type="email" name="email" placeholder="Email" required>
+        <input type="password" name="password" placeholder="Password" required>
+        <input type="password" name="confirm_password" placeholder="Confirm Password" required>
         <button type="submit">Sign Up</button>
-      </form>
+      </form> 
 
       <p class="login-text">Already have an account? <a href="login.html">Login here</a></p>
     </div>
   </main>
+  <script>
+    (async () => {
+      try {
+        const res = await fetch('flash.php');
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.flash) {
+          const c = document.createElement('div');
+          c.className = 'flash';
+          c.textContent = data.flash;
+          document.querySelector('.signup-container').insertBefore(c, document.querySelector('.signup-container').firstChild);
+        }
+      } catch (e) { /* ignore */ }
+    })();
+  </script>
 </body>
 </html>
