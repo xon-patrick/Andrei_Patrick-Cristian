@@ -1,0 +1,94 @@
+<?php
+session_start();
+require __DIR__ . '/db.php';
+require __DIR__ . '/film_helpers.php';
+
+$isLoggedIn = !empty($_SESSION['user_id']);
+$userId = $isLoggedIn ? (int)$_SESSION['user_id'] : 0;
+$userName = $isLoggedIn ? ($_SESSION['username'] ?? 'User') : '';
+
+// Get movie ID from query parameter
+$movieId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Journel</title>
+  <link rel="stylesheet" href="css/film.css" /> 
+</head>
+<body>
+  <nav id="nav-placeholder"></nav>
+  <script src="js/navbar.js" defer></script>
+
+  <!-- movie backdrop -->
+  <header id="filmHeader" class="filmHeader"></header>
+
+  <main class="filmMainContent">
+    <div class="filmInfo">
+      <div class="filmThumbnail">
+        <img id="filmThumbImg" src="" alt="Poster">
+      </div>
+      
+      <div class="filmDetails">
+        <h1 id="filmTitle" class="filmTitle">Loading…</h1>
+        <p id="filmMeta" class="filmMeta"><!-- year · director · runtime --></p>
+        <br>
+        <section class="filmSynopsis">
+            <h3 id="filmTagline"></h3>
+            <p id="filmOverview">Loading overview…</p>
+        </section>
+
+        <section class="filmActions">
+          <button class="actionBtn watched" id="btnWatched">
+            <span class="icon">👁</span>
+            <span>Watched</span>
+          </button>
+          <button class="actionBtn loved" id="btnLoved">
+            <span class="icon">❤</span>
+            <span>Loved</span>
+          </button>
+          <button class="actionBtn watchlist" id="btnWatchlist">
+            <span class="icon">📋</span>
+            <span>Watchlist</span>
+          </button>
+        </section>
+
+      </div>
+    </div>
+
+    <!-- TMDB Ratings Section -->
+    <section class="filmRatingsSection">
+      <h2>TMDB Rating</h2>
+      <div id="tmdbRatingContainer" class="ratingBox">
+        <!-- will be populated by JS -->
+      </div>
+    </section>
+
+    <!-- User Reviews from Site -->
+    <section class="filmReviews">
+      <h2>Journal Reviews</h2>
+      <div id="reviewsContainer">
+        <!-- reviews will be loaded here -->
+      </div>
+    </section>
+  </main>
+  
+  <footer>
+    © 2025 Journel.
+  </footer>
+
+  <script>
+    // Pass PHP data to JavaScript
+    const PHP_DATA = {
+      isLoggedIn: <?php echo $isLoggedIn ? 'true' : 'false'; ?>,
+      userId: <?php echo $userId; ?>,
+      userName: '<?php echo addslashes($userName); ?>',
+      movieId: <?php echo $movieId; ?>
+    };
+  </script>
+
+  <script src="js/film.js" defer></script>
+</body>
+</html>

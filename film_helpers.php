@@ -26,7 +26,8 @@ if (isset($pdo) && $pdo instanceof PDO) {
             rating TINYINT NULL,
             liked BOOLEAN DEFAULT FALSE,
             rewatch_count INT DEFAULT 0,
-            notes TEXT
+            notes TEXT,
+            UNIQUE KEY ux_user_film_watched (user_id, film_id)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
 
         $pdo->exec("CREATE TABLE IF NOT EXISTS lists (
@@ -45,6 +46,17 @@ if (isset($pdo) && $pdo instanceof PDO) {
             added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             position INT DEFAULT 0,
             UNIQUE KEY ux_list_film (list_id, film_id)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+
+        $pdo->exec("CREATE TABLE IF NOT EXISTS reviews (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            user_id INT NOT NULL,
+            film_id INT NOT NULL,
+            grade TINYINT NOT NULL DEFAULT 5,
+            review_text TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            INDEX idx_user_film_created (user_id, film_id, created_at)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
     } catch (Exception $e) {
         // ignore — endpoints will handle errors
@@ -70,5 +82,3 @@ function json_response($data) {
     echo json_encode($data);
     exit;
 }
-
-*** End Of File

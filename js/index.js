@@ -31,7 +31,7 @@ async function loadPopular() {
       `;
       card.style.cursor = "pointer";
       card.addEventListener("click", () => {
-        window.location.href = `film.html?id=${movie.id}`;
+        window.location.href = `film.php?id=${movie.id}`;
       });
       movieGrid.appendChild(card);
     });

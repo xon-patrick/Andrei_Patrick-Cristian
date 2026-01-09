@@ -32,6 +32,10 @@ async function getLatestMovies() {
         <img src="${movie.poster_path ? IMG_URL + movie.poster_path : "https://via.placeholder.com/300x450?text=No+Image"}" alt="${movie.title}">
         <p>${movie.title}</p>
       `;
+      card.style.cursor = 'pointer';
+      card.addEventListener('click', () => {
+        window.location.href = `film.php?id=${movie.id}`;
+      });
       movieGrid.appendChild(card);
     });
   } catch (err) {
@@ -105,7 +109,7 @@ async function renderDetailedCard(movie) {
 
   card.style.cursor = 'pointer';
   card.addEventListener('click', () => {
-    window.location.href = `film.html?id=${movie.id}`;
+    window.location.href = `film.php?id=${movie.id}`;
   });
 
   movieGrid.appendChild(card);
