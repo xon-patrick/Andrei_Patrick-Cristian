@@ -16,7 +16,8 @@ $movieId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Journel</title>
-  <link rel="stylesheet" href="css/film.css" /> 
+  <link rel="stylesheet" href="css/film.css" />
+  <link rel="stylesheet" href="css/forms.css" />
 </head>
 <body>
   <nav id="nav-placeholder"></nav>
@@ -68,7 +69,7 @@ $movieId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
     <!-- User Reviews from Site -->
     <section class="filmReviews">
-      <h2>Journal Reviews</h2>
+      <h2>Journel Reviews</h2>
       <div id="reviewsContainer">
         <!-- reviews will be loaded here -->
       </div>

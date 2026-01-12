@@ -151,77 +151,91 @@ if ($flash) unset($_SESSION['flash']);
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Edit Profile — Jurnel</title>
-  <link rel="stylesheet" href="css/index.css" />
-  <link rel="stylesheet" href="css/profile.css" />
-  <style>
-    .formRow { margin:8px 0; }
-    .formRow input, .formRow textarea { width:100%; padding:8px; box-sizing:border-box; }
-    .saveBtn { padding:10px 16px; background:#2b7; border:none; color:#fff; border-radius:6px; cursor:pointer; }
-    .flash { max-width:900px;margin:12px auto;padding:8px 12px;background:#e6ffea;border:1px solid #b6f2c9;color:#044d18;border-radius:6px; }
-  </style>
+  <link rel="stylesheet" href="css/navbar.css" />
+  <link rel="stylesheet" href="css/forms.css" />
 </head>
 <body>
   <?php include 'navbar.php'; ?>
 
-  <main style="max-width:900px;margin:24px auto;padding:0 12px;">
-    <h1>Edit account</h1>
-    <?php if ($flash): ?>
-      <div id="flash-msg" class="flash" style="position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:9999;min-width:260px;max-width:90%;padding:12px 16px;background:#e6ffea;border:1px solid #b6f2c9;color:#044d18;border-radius:6px;box-shadow:0 6px 18px rgba(0,0,0,0.08);opacity:1;transition:opacity 0.5s ease, transform 0.5s ease;">
-        <?php echo htmlspecialchars($flash); ?>
-      </div>
-      <script>
-        (function(){
-          const f = document.getElementById('flash-msg');
-          if (!f) return;
-          setTimeout(() => {
-            f.style.opacity = '0';
-            f.style.transform = 'translateX(-50%) translateY(-8px)';
-            setTimeout(() => { f.remove(); }, 600);
-          }, 2000);
-        })();
-      </script>
-    <?php endif; ?>
+  <?php if ($flash): ?>
+    <div id="flash-msg" class="flash success">
+      <?php echo htmlspecialchars($flash); ?>
+    </div>
+    <script>
+      (function(){
+        const f = document.getElementById('flash-msg');
+        if (!f) return;
+        setTimeout(() => {
+          f.style.opacity = '0';
+          f.style.transform = 'translateX(-50%) translateY(-8px)';
+          setTimeout(() => { f.remove(); }, 600);
+        }, 2500);
+      })();
+    </script>
+  <?php endif; ?>
 
-    <form method="post" action="edit_profile.php" enctype="multipart/form-data">
-      <div class="formRow">
-        <label>Username</label>
-        <input type="text" name="username" required value="<?php echo htmlspecialchars($username); ?>">
-      </div>
+  <main class="form-container">
+    <h1> Edit Your Profile</h1>
+    
+    <form method="post" action="edit_profile.php" enctype="multipart/form-data" class="edit-form">
+      <div class="form-section">
+        <h3>Account Information</h3>
+        
+        <div class="formRow">
+          <label for="username">Username</label>
+          <input type="text" id="username" name="username" required value="<?php echo htmlspecialchars($username); ?>" placeholder="Enter your username">
+        </div>
 
-      <div class="formRow">
-        <label>Email</label>
-        <input type="email" name="email" required value="<?php echo htmlspecialchars($email); ?>">
-      </div>
-
-      <div class="formRow">
-        <label>Upload profile picture (optional)</label>
-        <input type="file" name="avatar" accept="image/*">
-      </div>
-
-      <div class="formRow">
-        <label>Or profile picture URL</label>
-        <input type="text" name="profile_picture" value="<?php echo htmlspecialchars($profile_picture); ?>">
+        <div class="formRow">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" name="email" required value="<?php echo htmlspecialchars($email); ?>" placeholder="Enter your email">
+        </div>
       </div>
 
-      <div class="formRow">
-        <label>Bio</label>
-        <textarea name="bio" rows="4"><?php echo htmlspecialchars($bio); ?></textarea>
+      <div class="form-section">
+        <h3>Profile Picture</h3>
+        
+        <div class="formRow">
+          <label for="avatar">Upload New Picture</label>
+          <input type="file" id="avatar" name="avatar" accept="image/*">
+          <p class="helper-text">Accepted formats: JPG, PNG, WEBP, GIF (max 2MB)</p>
+        </div>
+
+        <div class="formRow">
+          <label for="profile_picture">Or Use Picture URL</label>
+          <input type="text" id="profile_picture" name="profile_picture" value="<?php echo htmlspecialchars($profile_picture); ?>" placeholder="https://example.com/image.jpg">
+          <p class="helper-text">Provide a direct link to an image</p>
+        </div>
       </div>
 
-      <hr>
-      <h3>Change password (optional)</h3>
-      <div class="formRow">
-        <label>New password</label>
-        <input type="password" name="new_password">
-      </div>
-      <div class="formRow">
-        <label>Confirm new password</label>
-        <input type="password" name="confirm_password">
+      <div class="form-section">
+        <h3>About You</h3>
+        
+        <div class="formRow">
+          <label for="bio">Bio</label>
+          <textarea id="bio" name="bio" rows="5" placeholder="Tell us about yourself..."><?php echo htmlspecialchars($bio); ?></textarea>
+          <p class="helper-text">Share your favorite movies, directors, or what you love about cinema</p>
+        </div>
       </div>
 
-      <div style="margin-top:12px;">
-        <button class="saveBtn" type="submit">Save changes</button>
-        <a href="profile.php" style="margin-left:12px;">Cancel</a>
+      <div class="form-section">
+        <h3>Change Password</h3>
+        <p style="color: #888; font-size: 0.9rem; margin-bottom: 1rem;">Leave blank to keep your current password</p>
+        
+        <div class="formRow">
+          <label for="new_password">New Password</label>
+          <input type="password" id="new_password" name="new_password" placeholder="Enter new password">
+        </div>
+        
+        <div class="formRow">
+          <label for="confirm_password">Confirm New Password</label>
+          <input type="password" id="confirm_password" name="confirm_password" placeholder="Re-enter new password">
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn btn-primary" type="submit"> Save Changes</button>
+        <a href="profile.php" class="btn btn-link">Cancel</a>
       </div>
     </form>
   </main>

@@ -33,14 +33,16 @@ $thisYearFilms = $stmt->fetch()['total'] ?? 0;
 $following = 0;
 $followers = 0;
 
-// Get favorite films
+// Get favorite films (last 6 in chronological order based on review date)
 $stmt = $pdo->prepare('
-  SELECT f.tmdb_id, f.title, f.poster_url 
+  SELECT f.tmdb_id, f.title, f.poster_url, MAX(w.watched_at) as last_watched
   FROM favorites fav 
   JOIN films f ON fav.film_id = f.film_id 
+  LEFT JOIN watched w ON w.film_id = f.film_id AND w.user_id = fav.user_id
   WHERE fav.user_id = ? 
-  ORDER BY fav.created_at DESC 
-  LIMIT 8
+  GROUP BY f.film_id, f.tmdb_id, f.title, f.poster_url
+  ORDER BY last_watched DESC 
+  LIMIT 6
 ');
 $stmt->execute([$userId]);
 $favorites = $stmt->fetchAll();
@@ -53,6 +55,7 @@ $favorites = $stmt->fetchAll();
   <title>Profile — Jurnel</title>
   <link rel="stylesheet" href="css/index.css" />
   <link rel="stylesheet" href="css/profile.css" />
+  <link rel="stylesheet" href="css/forms.css" />
 </head>
 <body>
   <?php include 'navbar.php'; ?>
@@ -67,7 +70,6 @@ $favorites = $stmt->fetchAll();
           (function(){
             const f = document.getElementById('flash-msg');
             if (!f) return;
-            // Auto-hide after 2 seconds without affecting layout
             setTimeout(() => {
               f.style.opacity = '0';
               f.style.transform = 'translateX(-50%) translateY(-8px)';
@@ -174,7 +176,6 @@ $favorites = $stmt->fetchAll();
               echo '<div class="col-released">RELEASED</div>';
               echo '<div class="col-rating">RATING</div>';
               echo '<div class="col-like">LIKE</div>';
-              echo '<div class="col-rewatch">REWATCH</div>';
               echo '<div class="col-actions">EDIT</div>';
               echo '</div>';
             }
@@ -202,9 +203,8 @@ $favorites = $stmt->fetchAll();
               }
               echo '</div>';
               echo '<div class="col-like">' . ($liked ? '❤' : '♡') . '</div>';
-              echo '<div class="col-rewatch"></div>';
               echo '<div class="col-actions">';
-              echo '<button class="delete-review-btn" data-tmdb-id="' . $r['tmdb_id'] . '" style="background:#c33;color:#fff;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;font-size:0.85rem;">Delete</button>';
+              echo '<button class="edit-review-btn" data-tmdb-id="' . $r['tmdb_id'] . '" data-title="' . htmlspecialchars($titleEsc, ENT_QUOTES) . '" data-poster="' . htmlspecialchars($poster, ENT_QUOTES) . '" data-rating="' . $rating . '" data-liked="' . $liked . '" data-watched-date="' . $dateObj->format('Y-m-d') . '" data-notes="' . htmlspecialchars($r['notes'] ?? '', ENT_QUOTES) . '" style="background:#456;color:#fff;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;font-size:0.85rem;">Edit</button>';
               echo '</div>';
               echo '</div>';
             }
@@ -220,48 +220,144 @@ $favorites = $stmt->fetchAll();
   <footer>© 2025 Jurnel.</footer>
   
   <script>
-    // Handle delete review buttons
+    // Helper to show modal
+    function showModal(html) {
+      const overlay = document.createElement('div');
+      overlay.className = 'modal-overlay';
+      const box = document.createElement('div');
+      box.className = 'modal-box';
+      box.innerHTML = html;
+      overlay.appendChild(box);
+      document.body.appendChild(overlay);
+      return { overlay, box };
+    }
+
+    // Helper to post form data
+    async function postForm(url, data) {
+      const form = new URLSearchParams();
+      for (const k in data) form.append(k, data[k]);
+      const res = await fetch(url, { method: 'POST', body: form, credentials: 'same-origin' });
+      return res.json().catch(() => ({}));
+    }
+
+    // Helper to escape HTML
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Handle edit review buttons
     document.addEventListener('click', async (e) => {
-      if (e.target.classList.contains('delete-review-btn')) {
-        if (!confirm('Are you sure you want to delete this review? This will remove it from your watched list and recent activity.')) {
-          return;
-        }
+      if (e.target.classList.contains('edit-review-btn')) {
+        const btn = e.target;
+        const tmdbId = btn.dataset.tmdbId;
+        const title = btn.dataset.title;
+        const poster = btn.dataset.poster;
+        const rating = btn.dataset.rating || 5;
+        const liked = btn.dataset.liked === '1';
+        const watchedDate = btn.dataset.watchedDate;
+        const notes = btn.dataset.notes || '';
+        const row = btn.closest('.calendarRow');
         
-        const tmdbId = e.target.dataset.tmdbId;
-        const row = e.target.closest('.calendarRow');
+        const html = `
+          <h2>Edit Your Review</h2>
+          <p>Update your review and grade for <strong>${escapeHtml(title)}</strong>.</p>
+          <div style="display:flex;gap:10px;margin:16px 0;align-items:center;">
+            <label style="min-width:120px">Watched on</label>
+            <input type="date" id="watched-date" value="${watchedDate}">
+          </div>
+          <div style="display:flex;gap:10px;margin:16px 0;align-items:center;">
+            <label style="min-width:120px">Grade (1-10)</label>
+            <select id="watched-grade">${Array.from({length:10}).map((_,i)=>`<option value="${i+1}" ${i+1 == rating ? 'selected' : ''}>${i+1}</option>`).join('')}</select>
+          </div>
+          <div style="margin:16px 0;">
+            <label>Review</label>
+            <textarea id="watched-review" rows="6" placeholder="Share your thoughts about this movie...">${escapeHtml(notes)}</textarea>
+          </div>
+          <div style="display:flex;gap:12px;align-items:center;margin-top:8px;">
+            <label><input type="checkbox" id="watched-fav" ${liked ? 'checked' : ''}> Add to favorites</label>
+          </div>
+          <div class="modal-actions">
+            <button id="watched-delete" class="btn-danger">Delete Review</button>
+            <button id="watched-submit" class="btn btn-success">Update Review</button>
+            <button id="watched-cancel" class="btn btn-secondary">Cancel</button>
+          </div>
+        `;
         
-        try {
-          const form = new URLSearchParams();
-          form.append('tmdb_id', tmdbId);
+        const { overlay, box } = showModal(html);
+        
+        // Cancel button
+        box.querySelector('#watched-cancel').addEventListener('click', () => overlay.remove());
+        
+        // Delete button
+        box.querySelector('#watched-delete').addEventListener('click', async () => {
+          if (!confirm('Are you sure you want to delete this review? This will remove it from your watched list and recent activity.')) {
+            return;
+          }
           
-          const res = await fetch('delete_review.php', {
-            method: 'POST',
-            body: form,
-            credentials: 'same-origin'
+          const deleteRes = await postForm('delete_review.php', { tmdb_id: tmdbId });
+          
+          if (deleteRes.error) {
+            alert('Error deleting review: ' + (deleteRes.message || deleteRes.error));
+            return;
+          }
+          
+          overlay.remove();
+          
+          // Remove row with animation
+          row.style.opacity = '0';
+          row.style.transition = 'opacity 0.3s';
+          setTimeout(() => row.remove(), 300);
+          
+          // Show success message
+          const s = document.createElement('div');
+          s.className = 'flash warning';
+          s.textContent = '🗑️ Review deleted successfully!';
+          document.body.appendChild(s);
+          setTimeout(() => s.style.opacity = '0', 2000);
+          setTimeout(() => s.remove(), 2600);
+        });
+        
+        // Submit button
+        box.querySelector('#watched-submit').addEventListener('click', async () => {
+          const newWatchedDate = box.querySelector('#watched-date').value;
+          const newGrade = box.querySelector('#watched-grade').value;
+          const newReview = box.querySelector('#watched-review').value;
+          const newFav = box.querySelector('#watched-fav').checked ? 1 : 0;
+          
+          // Save to database
+          const saveRes = await postForm('save_review.php', {
+            tmdb_id: tmdbId,
+            title: title,
+            poster: poster,
+            grade: newGrade,
+            review_text: newReview,
+            rating: newGrade,
+            liked: newFav,
+            notes: newReview,
+            watched_date: newWatchedDate,
+            is_rewatch: '0'
           });
           
-          const data = await res.json();
-          
-          if (data.ok) {
-            // Remove the row with animation
-            row.style.opacity = '0';
-            row.style.transition = 'opacity 0.3s';
-            setTimeout(() => row.remove(), 300);
-            
-            // Show success message
-            const s = document.createElement('div');
-            s.textContent = 'Review deleted!';
-            s.style = 'position:fixed;top:18px;left:50%;transform:translateX(-50%);background:#ffe6e6;color:#8b0000;padding:8px 12px;border-radius:6px;z-index:10001;';
-            document.body.appendChild(s);
-            setTimeout(() => s.style.opacity = '0', 1500);
-            setTimeout(() => s.remove(), 2100);
-          } else {
-            alert('Error deleting review: ' + (data.message || data.error));
+          if (saveRes.error) {
+            alert('Error saving review: ' + (saveRes.message || saveRes.error));
+            return;
           }
-        } catch (err) {
-          console.error('Delete error:', err);
-          alert('Error deleting review');
-        }
+          
+          overlay.remove();
+          
+          // Show success message
+          const s = document.createElement('div');
+          s.className = 'flash success';
+          s.textContent = ' Review updated!';
+          document.body.appendChild(s);
+          setTimeout(() => s.style.opacity = '0', 2000);
+          setTimeout(() => s.remove(), 2600);
+          
+          // Reload page to show updated data
+          setTimeout(() => window.location.reload(), 1000);
+        });
       }
     });
   </script>

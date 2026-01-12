@@ -120,7 +120,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           <div style="background: #222; padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 2px solid #ffb86b;">
             <div style="display: flex; align-items: center; gap: 20px;">
               <div style="flex: 1;">
-                <div style="color: #999; font-size: 0.9rem; margin-bottom: 4px;">Average Journal Grade</div>
+                <div style="color: #999; font-size: 0.9rem; margin-bottom: 4px;">Average Journel Grade</div>
                 <div style="color: #ffb86b; font-weight: 600; font-size: 1.5rem; margin-bottom: 8px;">${avgGrade}/10</div>
                 <div style="color: #ffd166; font-size: 1.2rem;">${avgStarsHtml}</div>
                 <div style="color: #999; font-size: 0.9rem; margin-top: 8px;">${siteReviews.length} review${siteReviews.length !== 1 ? 's' : ''}</div>
@@ -186,10 +186,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     function showModal(html) {
       const overlay = document.createElement('div');
       overlay.className = 'modal-overlay';
-      overlay.style = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:10000;';
       const box = document.createElement('div');
       box.className = 'modal-box';
-      box.style = 'background:#111;padding:18px;border-radius:8px;max-width:720px;width:100%;color:#eee;box-shadow:0 12px 40px rgba(0,0,0,0.6);';
       box.innerHTML = html;
       overlay.appendChild(box);
       document.body.appendChild(overlay);
@@ -232,34 +230,53 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     } catch (e) { /* ignore */ }
 
+    // Helper function to format date for display (yyyy-mm-dd to dd/mm/yyyy)
+    function formatDateForDisplay(dateStr) {
+      if (!dateStr) return '';
+      const [year, month, day] = dateStr.split('-');
+      return `${day}/${month}/${year}`;
+    }
+
+    // Helper function to parse display date (dd/mm/yyyy to yyyy-mm-dd)
+    function parseDateFromDisplay(dateStr) {
+      if (!dateStr) return '';
+      const parts = dateStr.split('/');
+      if (parts.length !== 3) return '';
+      const [day, month, year] = parts;
+      return `${year}-${month}-${day}`;
+    }
+
     // watched button -> open modal to submit rating and review (or edit existing)
     document.getElementById('btnWatched').addEventListener('click', (e) => {
       // Get today's date or existing watched date
       const defaultDate = userReview && userReview.watched_at ? userReview.watched_at.split(' ')[0] : new Date().toISOString().split('T')[0];
+      const defaultDateDisplay = formatDateForDisplay(defaultDate);
       const defaultGrade = userReview ? userReview.grade : 5;
       const defaultReview = userReview ? userReview.review_text || '' : '';
       const isEdit = userReview !== null;
       
       const html = `
-        <h2 style="margin-top:0">${isEdit ? 'Edit Review' : 'Mark as watched'}</h2>
-        <p style="color:#ccc">${isEdit ? 'Update your review and grade.' : 'Leave a grade, review and optionally add to favorites.'}</p>
-        <div style="display:flex;gap:10px;margin:10px 0;align-items:center;">
+        <h2>${isEdit ? ' Edit Your Review' : '🎬 Mark as Watched'}</h2>
+        <p>${isEdit ? 'Update your review and grade.' : 'Leave a grade, review and optionally add to favorites.'}</p>
+        <div style="display:flex;gap:10px;margin:16px 0;align-items:center;">
           <label style="min-width:120px">Watched on</label>
-          <input type="date" id="watched-date" value="${defaultDate}" style="padding: 6px; background: #0a0a0a; color: #fff; border: 1px solid #333; border-radius: 4px;">
+          <input type="text" id="watched-date" placeholder="dd/mm/yyyy" value="${defaultDateDisplay}" style="padding:8px;border:1px solid #ccc;border-radius:4px;">
         </div>
-        <div style="display:flex;gap:10px;margin:10px 0;align-items:center;">
+        <div style="display:flex;gap:10px;margin:16px 0;align-items:center;">
           <label style="min-width:120px">Grade (1-10)</label>
-          <select id="watched-grade" style="padding: 6px;">${Array.from({length:10}).map((_,i)=>`<option value="${i+1}" ${i+1 === defaultGrade ? 'selected' : ''}>${i+1}</option>`).join('')}</select>
+          <select id="watched-grade">${Array.from({length:10}).map((_,i)=>`<option value="${i+1}" ${i+1 === defaultGrade ? 'selected' : ''}>${i+1}</option>`).join('')}</select>
         </div>
-        <div style="margin:10px 0;">
+        <div style="margin:16px 0;">
           <label>Review</label>
-          <textarea id="watched-review" rows="6" style="width:100%; padding: 8px; border-radius: 4px; border: 1px solid #333; background: #0a0a0a; color: #fff;">${escapeHtml(defaultReview)}</textarea>
+          <textarea id="watched-review" rows="6" placeholder="Share your thoughts about this movie...">${escapeHtml(defaultReview)}</textarea>
         </div>
         <div style="display:flex;gap:12px;align-items:center;margin-top:8px;">
           <label><input type="checkbox" id="watched-fav"> Add to favorites</label>
-          ${isEdit ? '<button id="watched-delete" style="padding:8px 12px;background:#c33;color:#fff;border-radius:6px;border:none;cursor:pointer;">Delete</button>' : ''}
-          <button id="watched-submit" style="margin-left:auto;padding:8px 12px;background:#2b7;color:#041;border-radius:6px;border:none;cursor:pointer;">${isEdit ? 'Update' : 'Save'}</button>
-          <button id="watched-cancel" style="padding:8px 12px;background:#333;color:#ddd;border-radius:6px;border:none;cursor:pointer;">Cancel</button>
+        </div>
+        <div class="modal-actions">
+          ${isEdit ? '<button id="watched-delete" class="btn-danger">Delete Review</button>' : ''}
+          <button id="watched-submit" class="btn btn-success">${isEdit ? 'Update Review' : 'Save Review'}</button>
+          <button id="watched-cancel" class="btn btn-secondary">Cancel</button>
         </div>
       `;
       const { overlay, box } = showModal(html);
@@ -283,11 +300,11 @@ document.addEventListener('DOMContentLoaded', async () => {
           
           // Show success message
           const s = document.createElement('div');
-          s.textContent = 'Review deleted!';
-          s.style = 'position:fixed;top:18px;left:50%;transform:translateX(-50%);background:#ffe6e6;color:#8b0000;padding:8px 12px;border-radius:6px;z-index:10001;';
+          s.className = 'flash warning';
+          s.textContent = '🗑️ Review deleted successfully!';
           document.body.appendChild(s);
-          setTimeout(() => s.style.opacity = '0', 1500);
-          setTimeout(() => s.remove(), 2100);
+          setTimeout(() => s.style.opacity = '0', 2000);
+          setTimeout(() => s.remove(), 2600);
           
           // Reset userReview and reload reviews
           userReview = null;
@@ -299,7 +316,14 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
       
       box.querySelector('#watched-submit').addEventListener('click', async () => {
-        const watchedDate = box.querySelector('#watched-date').value;
+        const watchedDateDisplay = box.querySelector('#watched-date').value;
+        const watchedDate = parseDateFromDisplay(watchedDateDisplay);
+        
+        if (!watchedDate) {
+          alert('Please enter a valid date in dd/mm/yyyy format');
+          return;
+        }
+        
         const grade = box.querySelector('#watched-grade').value;
         const review = box.querySelector('#watched-review').value;
         const fav = box.querySelector('#watched-fav').checked ? 1 : 0;
@@ -337,11 +361,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         // Show success message
         const s = document.createElement('div');
-        s.textContent = isEdit ? 'Review updated!' : 'Review saved!';
-        s.style = 'position:fixed;top:18px;left:50%;transform:translateX(-50%);background:#e6ffea;color:#044d18;padding:8px 12px;border-radius:6px;z-index:10001;';
+        s.className = 'flash success';
+        s.textContent = isEdit ? '✅ Review updated!' : '✅ Review saved!';
         document.body.appendChild(s);
-        setTimeout(() => s.style.opacity = '0', 1500);
-        setTimeout(() => s.remove(), 2100);
+        setTimeout(() => s.style.opacity = '0', 2000);
+        setTimeout(() => s.remove(), 2600);
         
         // Update userReview and reload reviews
         userReview = { watched: true, grade: grade, review_text: review, watched_at: watchedDate };
@@ -365,25 +389,26 @@ document.addEventListener('DOMContentLoaded', async () => {
       
       btnRewatch.addEventListener('click', () => {
         const today = new Date().toISOString().split('T')[0];
+        const todayDisplay = formatDateForDisplay(today);
         
         const html = `
-          <h2 style="margin-top:0">Rewatch Movie</h2>
-          <p style="color:#ccc">Add a new review for this rewatch.</p>
-          <div style="display:flex;gap:10px;margin:10px 0;align-items:center;">
+          <h2>🔄 Rewatch Movie</h2>
+          <p>Add a new review for this rewatch.</p>
+          <div style="display:flex;gap:10px;margin:16px 0;align-items:center;">
             <label style="min-width:120px">Watched on</label>
-            <input type="date" id="watched-date" value="${today}" style="padding: 6px; background: #0a0a0a; color: #fff; border: 1px solid #333; border-radius: 4px;">
+            <input type="text" id="watched-date" placeholder="dd/mm/yyyy" value="${todayDisplay}" style="padding:8px;border:1px solid #ccc;border-radius:4px;">
           </div>
-          <div style="display:flex;gap:10px;margin:10px 0;align-items:center;">
+          <div style="display:flex;gap:10px;margin:16px 0;align-items:center;">
             <label style="min-width:120px">Grade (1-10)</label>
-            <select id="watched-grade" style="padding: 6px;">${Array.from({length:10}).map((_,i)=>`<option value="${i+1}" ${i+1 === 5 ? 'selected' : ''}>${i+1}</option>`).join('')}</select>
+            <select id="watched-grade">${Array.from({length:10}).map((_,i)=>`<option value="${i+1}" ${i+1 === 5 ? 'selected' : ''}>${i+1}</option>`).join('')}</select>
           </div>
-          <div style="margin:10px 0;">
+          <div style="margin:16px 0;">
             <label>Review</label>
-            <textarea id="watched-review" rows="6" style="width:100%; padding: 8px; border-radius: 4px; border: 1px solid #333; background: #0a0a0a; color: #fff;"></textarea>
+            <textarea id="watched-review" rows="6" placeholder="How was your experience rewatching this film?"></textarea>
           </div>
-          <div style="display:flex;gap:12px;align-items:center;margin-top:8px;">
-            <button id="watched-submit" style="margin-left:auto;padding:8px 12px;background:#2b7;color:#041;border-radius:6px;border:none;cursor:pointer;">Save Rewatch</button>
-            <button id="watched-cancel" style="padding:8px 12px;background:#333;color:#ddd;border-radius:6px;border:none;cursor:pointer;">Cancel</button>
+          <div class="modal-actions">
+            <button id="watched-submit" class="btn btn-success">Save Rewatch</button>
+            <button id="watched-cancel" class="btn btn-secondary">Cancel</button>
           </div>
         `;
         const { overlay, box } = showModal(html);
@@ -416,11 +441,11 @@ document.addEventListener('DOMContentLoaded', async () => {
           
           // Show success message
           const s = document.createElement('div');
-          s.textContent = 'Rewatch saved!';
-          s.style = 'position:fixed;top:18px;left:50%;transform:translateX(-50%);background:#e6ffea;color:#044d18;padding:8px 12px;border-radius:6px;z-index:10001;';
+          s.className = 'flash success';
+          s.textContent = '🔄 Rewatch saved!';
           document.body.appendChild(s);
-          setTimeout(() => s.style.opacity = '0', 1500);
-          setTimeout(() => s.remove(), 2100);
+          setTimeout(() => s.style.opacity = '0', 2000);
+          setTimeout(() => s.remove(), 2600);
           
           // Reload reviews
           loadSiteReviews();
@@ -439,14 +464,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       const options = lists.map(l => `<option value="${l.id}">${l.name}</option>`).join('');
       const html = `
-        <h2 style="margin-top:0">Add to list</h2>
-        <div style="margin:10px 0;">
-          <select id="select-list" style="width:100%">${options}</select>
+        <h2> Add to List</h2>
+        <p>Select a list or create a new one.</p>
+        <div style="margin:16px 0;">
+          <label>Choose list</label>
+          <select id="select-list">${options || '<option value="">No lists yet</option>'}</select>
         </div>
-        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px;">
-          <button id="create-list" style="padding:8px 12px;background:#368;">New list</button>
-          <button id="add-list" style="padding:8px 12px;background:#2b7;color:#041;">Add</button>
-          <button id="cancel-list" style="padding:8px 12px;background:#333;color:#ddd;">Cancel</button>
+        <div class="modal-actions">
+          <button id="create-list" class="btn btn-secondary">+ New List</button>
+          <button id="add-list" class="btn btn-success">Add to List</button>
+          <button id="cancel-list" class="btn btn-secondary">Cancel</button>
         </div>
       `;
       const { overlay, box } = showModal(html);
@@ -469,8 +496,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         const j = await postForm('add_to_list.php', { list_id: listId, tmdb_id: id, title: details.title || '', poster: details.poster_path ? `${IMG_BASE}w342${details.poster_path}` : '' });
         if (j.ok) {
           overlay.remove();
-          const s = document.createElement('div'); s.textContent = 'Added to list'; s.style = 'position:fixed;top:18px;left:50%;transform:translateX(-50%);background:#e6ffea;color:#044d18;padding:8px 12px;border-radius:6px;z-index:10001;'; document.body.appendChild(s);
-          setTimeout(()=>s.style.opacity='0',1500); setTimeout(()=>s.remove(),2100);
+          const s = document.createElement('div');
+          s.className = 'flash success';
+          s.textContent = ' Aded to list';
+          document.body.appendChild(s);
+          setTimeout(() => s.style.opacity = '0', 2000);
+          setTimeout(() => s.remove(), 2600);
         } else {
           alert('Failed to add to list');
         }
