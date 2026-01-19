@@ -18,7 +18,6 @@ if ($tmdbId <= 0) {
     exit;
 }
 
-// Find the film
 $stmt = $pdo->prepare('SELECT film_id FROM films WHERE tmdb_id = ? LIMIT 1');
 $stmt->execute([$tmdbId]);
 $film = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -30,7 +29,6 @@ if (!$film) {
 
 $filmId = (int)$film['film_id'];
 
-// Get the user's latest review
 $stmt = $pdo->prepare('
     SELECT r.grade, r.review_text, r.created_at, w.watched_at, w.rating, w.liked
     FROM reviews r

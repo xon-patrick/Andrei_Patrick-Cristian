@@ -7,7 +7,6 @@ $userId = (int)$_SESSION['user_id'];
 $list_id = isset($_GET['list_id']) ? (int)$_GET['list_id'] : 0;
 if ($list_id <= 0) { header('Content-Type: application/json'); echo json_encode(['error'=>'list_id_required']); exit; }
 
-// ensure list belongs to user
 $stmt = $pdo->prepare('SELECT id FROM lists WHERE id = ? AND user_id = ? LIMIT 1');
 $stmt->execute([$list_id, $userId]);
 if (!$stmt->fetch()) { header('Content-Type: application/json'); echo json_encode(['error'=>'list_not_found']); exit; }

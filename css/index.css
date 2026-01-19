@@ -186,3 +186,178 @@ footer {
   color: #666;
   background-color: #0d0d0d;
 }
+
+/* --- Recent Activity --- */
+.recent-activity {
+  padding: 4rem 0;
+  background-color: #0d0d0d;
+}
+
+.recent-activity h2 {
+  text-align: center;
+  margin-bottom: 2.5rem;
+  font-size: 2rem;
+  color: #f5f5f5;
+}
+
+.activity-container {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none; 
+  -ms-overflow-style: none; 
+}
+
+.activity-container::-webkit-scrollbar {
+  display: none;
+}
+
+.activity-card {
+  background: #1a1a1a;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 1rem;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+  width: 320px;
+}
+
+.activity-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.activity-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255,255,255,0.1);
+}
+
+.activity-user-info {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.activity-username {
+  font-weight: 600;
+  color: #fff;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.activity-username:hover {
+  color: #ff4444;
+}
+
+.activity-action {
+  color: #999;
+  font-size: 0.9rem;
+}
+
+.activity-time {
+  color: #666;
+  font-size: 0.85rem;
+  margin-left: auto;
+}
+
+.activity-content {
+  display: flex;
+  gap: 1rem;
+}
+
+.activity-poster-link {
+  flex-shrink: 0;
+}
+
+.activity-poster {
+  width: 60px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 6px;
+  transition: transform 0.2s;
+}
+
+.activity-poster:hover {
+  transform: scale(1.05);
+}
+
+.activity-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.activity-film-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #fff;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.activity-film-title:hover {
+  color: #ff4444;
+}
+
+.activity-rating {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.activity-star {
+  color: #333;
+  font-size: 0.9rem;
+  transition: color 0.2s;
+}
+
+.activity-star.filled {
+  color: #ff4444;
+}
+
+.activity-rating-number {
+  color: #999;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-left: 0.25rem;
+}
+
+.activity-review {
+  color: #b0b8c2;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  font-style: italic;
+  margin: 0;
+  padding: 0.6rem;
+  background: rgba(255,255,255,0.02);
+  border-radius: 6px;
+  border-left: 3px solid rgba(255,68,68,0.3);
+  max-height: 4.5em;
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  .activity-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .activity-content {
+    flex-direction: column;
+  }
+  
+  .activity-poster {
+    width: 100%;
+    height: auto;
+  }
+}

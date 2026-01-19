@@ -1,5 +1,5 @@
 <?php
-// Force JSON output and prevent caching
+// Force JSON output and prevent caching recomandare chat
 header('Content-Type: application/json');
 header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
 
@@ -7,11 +7,9 @@ session_start();
 require __DIR__ . '/db.php';
 require __DIR__ . '/film_helpers.php';
 
-// Accept either film_id or tmdb_id
 $filmId = isset($_GET['film_id']) ? (int)$_GET['film_id'] : 0;
 $tmdbId = isset($_GET['tmdb_id']) ? (int)$_GET['tmdb_id'] : 0;
 
-// If tmdb_id is provided, look up film_id
 if ($tmdbId > 0 && $filmId === 0) {
     try {
         $stmt = $pdo->prepare('SELECT film_id FROM films WHERE tmdb_id = ? LIMIT 1');
@@ -28,7 +26,7 @@ if ($filmId <= 0) {
 }
 
 try {
-    // Fetch only the latest review per user for the film
+    // ultimul review daca filmul a fost revazut
     $stmt = $pdo->prepare('
         SELECT 
             r.id,
@@ -49,15 +47,16 @@ try {
     $stmt->execute([$filmId, $filmId]);
     $reviews = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
-    // For each review, try to get username from users table
     foreach ($reviews as &$review) {
         try {
-            $userStmt = $pdo->prepare('SELECT username FROM users WHERE user_id = ? LIMIT 1');
+            $userStmt = $pdo->prepare('SELECT username, profile_picture FROM users WHERE user_id = ? LIMIT 1');
             $userStmt->execute([$review['user_id']]);
             $userRow = $userStmt->fetch(PDO::FETCH_ASSOC);
             $review['username'] = $userRow ? $userRow['username'] : 'User #' . $review['user_id'];
+            $review['profile_picture'] = $userRow ? $userRow['profile_picture'] : null;
         } catch (Exception $ue) {
             $review['username'] = 'User #' . $review['user_id'];
+            $review['profile_picture'] = null;
         }
     }
     unset($review);

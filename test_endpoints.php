@@ -1,7 +1,7 @@
 <?php
 header('Content-Type: application/json');
 
-// Test what files exist
+// verificare ce fisiere exista
 $files = [
     'save_review.php' => file_exists('save_review.php'),
     'get_reviews.php' => file_exists('get_reviews.php'),

@@ -2,14 +2,11 @@
 if (session_status() === PHP_SESSION_NONE) session_start();
 require_once __DIR__ . '/db.php';
 
-// Only send cache-control headers and diagnostic JSON when this file
-// is requested directly (not when included by other PHP pages).
 if (realpath(__FILE__) === realpath($_SERVER['SCRIPT_FILENAME'])) {
-  // prevent caching of this fragment so clients always fetch fresh login state
   header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
   header('Pragma: no-cache');
 
-  // lightweight diagnostic JSON when called with ?diag=1
+  // lightweight diagnostic JSON when called with ?diag=1 - recomandare chat
   if (isset($_GET['diag'])) {
     header('Content-Type: application/json');
     $logged = !empty($_SESSION['user_id']);
@@ -20,7 +17,7 @@ if (realpath(__FILE__) === realpath($_SERVER['SCRIPT_FILENAME'])) {
     exit;
   }
 }
-// try to get user avatar if logged in
+
 $avatar = 'profile.jpeg';
 $username = $_SESSION['username'] ?? null;
 if (!empty($_SESSION['user_id'])) {
@@ -50,7 +47,7 @@ if (!empty($_SESSION['user_id'])) {
       </button>
     </form>
 
-    <a href="lists.php">Lists</a>
+    <a href="people.php">People</a>
 
     <?php if (!empty($username)): ?>
       <a href="profile.php" class="profile-link nav-btn account">

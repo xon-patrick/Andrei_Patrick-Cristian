@@ -3,7 +3,6 @@ session_start();
 require __DIR__ . '/db.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    // If user requested register.php directly, redirect to the HTML form
     header('Location: signup.html');
     exit;
 }
@@ -41,7 +40,6 @@ try {
     $_SESSION['user_id'] = $userId;
     $_SESSION['username'] = $username;
 
-    // ensure lists table exists (safe no-op if migration already ran)
     $pdo->exec("CREATE TABLE IF NOT EXISTS lists (
         id INT AUTO_INCREMENT PRIMARY KEY,
         user_id INT NOT NULL,
@@ -51,7 +49,7 @@ try {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
 
-    // create default Favorites list for the new user
+    // creare lista favorite
     $stmtList = $pdo->prepare('INSERT INTO lists (user_id, name, is_default) VALUES (?, ?, 1)');
     $stmtList->execute([$userId, 'Favorites']);
 

@@ -1,4 +1,3 @@
-// ...existing code...
 const API_KEY = "e248a5fff5839613f5ada67376c45422";
 const BASE_URL = "https://api.themoviedb.org/3";
 const IMG_URL = "https://image.tmdb.org/t/p/w500";

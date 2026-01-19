@@ -24,13 +24,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     try {
-      // fetch current profile picture for cleanup if replaced
       $stmtOld = $pdo->prepare('SELECT profile_picture FROM users WHERE user_id = ? LIMIT 1');
       $stmtOld->execute([$userId]);
       $oldRow = $stmtOld->fetch();
       $oldPic = $oldRow['profile_picture'] ?? null;
 
-      // handle uploaded avatar if present
       if (!empty($_FILES['avatar']) && $_FILES['avatar']['error'] !== UPLOAD_ERR_NO_FILE) {
         $file = $_FILES['avatar'];
         if ($file['error'] !== UPLOAD_ERR_OK) {
@@ -66,7 +64,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           exit;
         }
 
-        // final verification of mime
         $real = $finfo->file($dest);
         if ($real !== $mime) {
           @unlink($dest);
@@ -75,11 +72,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           exit;
         }
 
-        // set public path to store in DB
         $profile_picture = 'uploads/' . $name;
       }
-
-        // ensure username/email uniqueness (exclude current user)
         $stmt = $pdo->prepare('SELECT user_id FROM users WHERE (username = ? OR email = ?) AND user_id != ? LIMIT 1');
         $stmt->execute([$username, $email, $userId]);
         if ($stmt->fetch()) {
@@ -88,7 +82,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
 
-        // build update query
         $fields = ['username' => $username, 'email' => $email, 'bio' => $bio, 'profile_picture' => $profile_picture];
         $sqlParts = [];
         $params = [];
@@ -113,7 +106,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt = $pdo->prepare($sql);
         $stmt->execute($params);
 
-        // remove old uploaded file if we replaced it (and it's a local uploads path)
         if (!empty($oldPic) && !empty($profile_picture) && $oldPic !== $profile_picture) {
           $oldPath = __DIR__ . '/' . ltrim($oldPic, '/');
           if (strpos($oldPic, 'uploads/') === 0 && is_file($oldPath)) {
@@ -133,7 +125,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// GET — fetch current values
+// valori curente
 $stmt = $pdo->prepare('SELECT username, email, profile_picture, bio FROM users WHERE user_id = ? LIMIT 1');
 $stmt->execute([$userId]);
 $user = $stmt->fetch();

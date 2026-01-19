@@ -7,7 +7,6 @@ $isLoggedIn = !empty($_SESSION['user_id']);
 $userId = $isLoggedIn ? (int)$_SESSION['user_id'] : 0;
 $userName = $isLoggedIn ? ($_SESSION['username'] ?? 'User') : '';
 
-// Get movie ID from query parameter
 $movieId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 ?>
 <!DOCTYPE html>
@@ -34,7 +33,7 @@ $movieId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
       
       <div class="filmDetails">
         <h1 id="filmTitle" class="filmTitle">Loading…</h1>
-        <p id="filmMeta" class="filmMeta"><!-- year · director · runtime --></p>
+        <p id="filmMeta" class="filmMeta"></p>
         <br>
         <section class="filmSynopsis">
             <h3 id="filmTagline"></h3>
@@ -59,19 +58,17 @@ $movieId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
       </div>
     </div>
 
-    <!-- TMDB Ratings Section -->
+    <!-- tmdb ratings -->
     <section class="filmRatingsSection">
       <h2>TMDB Rating</h2>
       <div id="tmdbRatingContainer" class="ratingBox">
-        <!-- will be populated by JS -->
       </div>
     </section>
 
-    <!-- User Reviews from Site -->
+    <!-- reviewurile mere -->
     <section class="filmReviews">
       <h2>Journel Reviews</h2>
       <div id="reviewsContainer">
-        <!-- reviews will be loaded here -->
       </div>
     </section>
   </main>
@@ -81,7 +78,6 @@ $movieId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
   </footer>
 
   <script>
-    // Pass PHP data to JavaScript
     const PHP_DATA = {
       isLoggedIn: <?php echo $isLoggedIn ? 'true' : 'false'; ?>,
       userId: <?php echo $userId; ?>,

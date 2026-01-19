@@ -1,5 +1,4 @@
 <?php
-// Ensure required tables exist (safe no-op if migration has already run)
 if (isset($pdo) && $pdo instanceof PDO) {
     try {
         $pdo->exec("CREATE TABLE IF NOT EXISTS films (
@@ -8,7 +7,7 @@ if (isset($pdo) && $pdo instanceof PDO) {
             title VARCHAR(512) NOT NULL,
             poster_url VARCHAR(1024),
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;"); // InnoDB adaugat de chat din cauza unei erori
 
         $pdo->exec("CREATE TABLE IF NOT EXISTS favorites (
             id INT AUTO_INCREMENT PRIMARY KEY,
@@ -29,7 +28,7 @@ if (isset($pdo) && $pdo instanceof PDO) {
             notes TEXT,
             UNIQUE KEY ux_user_film_watched (user_id, film_id)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
-
+    
         $pdo->exec("CREATE TABLE IF NOT EXISTS lists (
             id INT AUTO_INCREMENT PRIMARY KEY,
             user_id INT NOT NULL,
@@ -59,19 +58,16 @@ if (isset($pdo) && $pdo instanceof PDO) {
             INDEX idx_user_film_created (user_id, film_id, created_at)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
     } catch (Exception $e) {
-        // ignore — endpoints will handle errors
+        
     }
 }
 
-// small helper to find or insert a film record
 function getOrCreateFilm(PDO $pdo, int $tmdb_id, string $title = '', ?string $poster = null) {
-    // try find
     $stmt = $pdo->prepare('SELECT film_id FROM films WHERE tmdb_id = ? LIMIT 1');
     $stmt->execute([$tmdb_id]);
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
     if ($row) return (int)$row['film_id'];
 
-    // insert
     $stmt = $pdo->prepare('INSERT INTO films (tmdb_id, title, poster_url) VALUES (?, ?, ?)');
     $stmt->execute([$tmdb_id, $title, $poster]);
     return (int)$pdo->lastInsertId();

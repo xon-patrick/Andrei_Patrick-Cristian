@@ -18,22 +18,24 @@ $bio = $user['bio'] ?? '';
 $flash = $_SESSION['flash'] ?? null;
 if ($flash) unset($_SESSION['flash']);
 
-// Calculate stats
-// Total films watched
+// stats
 $stmt = $pdo->prepare('SELECT COUNT(*) as total FROM watched WHERE user_id = ?');
 $stmt->execute([$userId]);
 $totalFilms = $stmt->fetch()['total'] ?? 0;
 
-// Films watched this year
 $stmt = $pdo->prepare('SELECT COUNT(*) as total FROM watched WHERE user_id = ? AND YEAR(watched_at) = YEAR(CURDATE())');
 $stmt->execute([$userId]);
 $thisYearFilms = $stmt->fetch()['total'] ?? 0;
 
-// For now, following/followers are placeholder (you can implement these later)
-$following = 0;
-$followers = 0;
+// Following/Followers counts
+$stmt = $pdo->prepare('SELECT COUNT(*) as total FROM follows WHERE follower_id = ?');
+$stmt->execute([$userId]);
+$following = $stmt->fetch()['total'] ?? 0;
 
-// Get favorite films (last 6 in chronological order based on review date)
+$stmt = $pdo->prepare('SELECT COUNT(*) as total FROM follows WHERE following_id = ?');
+$stmt->execute([$userId]);
+$followers = $stmt->fetch()['total'] ?? 0;
+
 $stmt = $pdo->prepare('
   SELECT f.tmdb_id, f.title, f.poster_url, MAX(w.watched_at) as last_watched
   FROM favorites fav 
@@ -82,6 +84,9 @@ $favorites = $stmt->fetchAll();
         <img src="<?php echo htmlspecialchars($profile_picture); ?>" alt="avatar" class="profilePhoto">
         <div class="profileInfo">
           <h1 class="profileName"><?php echo htmlspecialchars($username); ?></h1>
+          <?php if ($bio): ?>
+            <p class="profileBio"><?php echo htmlspecialchars($bio); ?></p>
+          <?php endif; ?>
           <div class="profileActions">
             <a href="edit_profile.php" class="editBtn">Edit account</a>
           </div>
@@ -141,22 +146,19 @@ $favorites = $stmt->fetchAll();
         if (!$rows) {
           echo '<p style="color:#ccc">No activity yet.</p>';
         } else {
-          // Group by month and year
           $groupedByMonth = [];
           foreach ($rows as $r) {
-            // Use DateTime to avoid timezone issues
             $dateObj = new DateTime($r['watched_at']);
-            $monthYear = $dateObj->format('Y-m'); // e.g., "2025-10"
+            $monthYear = $dateObj->format('Y-m'); 
             if (!isset($groupedByMonth[$monthYear])) {
               $groupedByMonth[$monthYear] = [];
             }
             $groupedByMonth[$monthYear][] = $r;
           }
           
-          // Display each month group
           foreach ($groupedByMonth as $monthYear => $monthRows) {
             $firstDateObj = new DateTime($monthRows[0]['watched_at']);
-            $monthName = strtoupper($firstDateObj->format('M')); // e.g., "OCT"
+            $monthName = strtoupper($firstDateObj->format('M')); 
             $year = $firstDateObj->format('Y');
             
             echo '<div class="monthGroup">';
@@ -167,7 +169,6 @@ $favorites = $stmt->fetchAll();
             
             echo '<div class="monthEntries">';
             
-            // Add header row for first month only
             if ($monthYear === array_key_first($groupedByMonth)) {
               echo '<div class="calendarHeader">';
               echo '<div class="col-day">DAY</div>';
@@ -209,8 +210,8 @@ $favorites = $stmt->fetchAll();
               echo '</div>';
             }
             
-            echo '</div>'; // close monthEntries
-            echo '</div>'; // close monthGroup
+            echo '</div>'; 
+            echo '</div>'; 
           }
         }
       ?>
@@ -220,7 +221,6 @@ $favorites = $stmt->fetchAll();
   <footer>© 2025 Jurnel.</footer>
   
   <script>
-    // Helper to show modal
     function showModal(html) {
       const overlay = document.createElement('div');
       overlay.className = 'modal-overlay';
@@ -232,7 +232,6 @@ $favorites = $stmt->fetchAll();
       return { overlay, box };
     }
 
-    // Helper to post form data
     async function postForm(url, data) {
       const form = new URLSearchParams();
       for (const k in data) form.append(k, data[k]);
@@ -240,14 +239,12 @@ $favorites = $stmt->fetchAll();
       return res.json().catch(() => ({}));
     }
 
-    // Helper to escape HTML
     function escapeHtml(text) {
       const div = document.createElement('div');
       div.textContent = text;
       return div.innerHTML;
     }
 
-    // Handle edit review buttons
     document.addEventListener('click', async (e) => {
       if (e.target.classList.contains('edit-review-btn')) {
         const btn = e.target;
@@ -287,10 +284,8 @@ $favorites = $stmt->fetchAll();
         
         const { overlay, box } = showModal(html);
         
-        // Cancel button
         box.querySelector('#watched-cancel').addEventListener('click', () => overlay.remove());
         
-        // Delete button
         box.querySelector('#watched-delete').addEventListener('click', async () => {
           if (!confirm('Are you sure you want to delete this review? This will remove it from your watched list and recent activity.')) {
             return;
@@ -305,12 +300,11 @@ $favorites = $stmt->fetchAll();
           
           overlay.remove();
           
-          // Remove row with animation
+          // animatie
           row.style.opacity = '0';
           row.style.transition = 'opacity 0.3s';
           setTimeout(() => row.remove(), 300);
           
-          // Show success message
           const s = document.createElement('div');
           s.className = 'flash warning';
           s.textContent = '🗑️ Review deleted successfully!';
@@ -319,14 +313,12 @@ $favorites = $stmt->fetchAll();
           setTimeout(() => s.remove(), 2600);
         });
         
-        // Submit button
         box.querySelector('#watched-submit').addEventListener('click', async () => {
           const newWatchedDate = box.querySelector('#watched-date').value;
           const newGrade = box.querySelector('#watched-grade').value;
           const newReview = box.querySelector('#watched-review').value;
           const newFav = box.querySelector('#watched-fav').checked ? 1 : 0;
           
-          // Save to database
           const saveRes = await postForm('save_review.php', {
             tmdb_id: tmdbId,
             title: title,
@@ -347,7 +339,6 @@ $favorites = $stmt->fetchAll();
           
           overlay.remove();
           
-          // Show success message
           const s = document.createElement('div');
           s.className = 'flash success';
           s.textContent = ' Review updated!';
@@ -355,7 +346,6 @@ $favorites = $stmt->fetchAll();
           setTimeout(() => s.style.opacity = '0', 2000);
           setTimeout(() => s.remove(), 2600);
           
-          // Reload page to show updated data
           setTimeout(() => window.location.reload(), 1000);
         });
       }

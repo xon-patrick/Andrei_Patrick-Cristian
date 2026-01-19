@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const reviewsContainer = document.getElementById('reviewsContainer');
   const tmdbRatingContainer = document.getElementById('tmdbRatingContainer');
 
-  // loading state
+  
   titleEl.textContent = 'Loading…';
   overviewEl.textContent = '';
 
@@ -30,17 +30,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     console.log('Movie details loaded:', details);
 
-    // set page title
     document.title = `${details.title} — Journel`;
 
-    // backdrop for header (prefer backdrop, fallback to poster)
     const backdropPath = details.backdrop_path || details.poster_path;
     if (backdropPath) {
       const imgUrl = `${IMG_BASE}w1280${backdropPath}`;
       filmHeader.style.backgroundImage = `linear-gradient(to bottom, rgba(20,24,28,0) 0%, rgba(20,24,28,0.8) 70%, #14181c 100%), url('${imgUrl}')`;
     }
 
-    // poster thumbnail
     if (details.poster_path) {
       thumbImg.src = `${IMG_BASE}w342${details.poster_path}`;
       thumbImg.alt = details.title;
@@ -48,12 +45,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       thumbImg.src = 'https://via.placeholder.com/300x450?text=No+Image';
     }
 
-    // title, tagline, overview
     titleEl.textContent = details.title || '—';
     taglineEl.textContent = details.tagline || '';
     overviewEl.textContent = details.overview || 'No description available.';
 
-    // Display TMDB Rating in the dedicated TMDB section (no text reviews)
+    // Tmdb taing fara reviewurile lor
     const rating10 = details.vote_average ? details.vote_average.toFixed(1) : 'N/A';
     const rating5 = details.vote_average ? Math.round(details.vote_average / 2) : 0;
     const starsHtml = Array.from({ length: 5 })
@@ -72,26 +68,23 @@ document.addEventListener('DOMContentLoaded', async () => {
       </div>
     `;
 
-    // director
     let director = 'Unknown';
     if (details.credits && Array.isArray(details.credits.crew)) {
       const dir = details.credits.crew.find(c => c.job === 'Director' || c.department === 'Directing');
       if (dir) director = dir.name;
     }
 
-    // runtime and year
     const runtime = details.runtime ? `${details.runtime} min` : 'N/A';
     const year = details.release_date ? details.release_date.split('-')[0] : 'N/A';
 
     metaEl.innerHTML = `<u><b>${year}</b></u> ‧ Directed by <u><b>${director}</b></u> ‧ ${runtime}`;
 
-    // Load site reviews from database (not TMDB)
+    // incarcare reviewurile mele
     reviewsContainer.innerHTML = '';
-    
-    // Helper to load site reviews
+
     async function loadSiteReviews() {
       try {
-        // Fetch reviews using tmdb_id
+        // bazat pe idul din tmdb
         const reviewsRes = await fetch('get_reviews.php?tmdb_id=' + id, { credentials: 'same-origin' });
         
         if (!reviewsRes.ok) {
@@ -107,7 +100,6 @@ document.addEventListener('DOMContentLoaded', async () => {
           return;
         }
         
-        // Calculate average grade
         const totalGrade = siteReviews.reduce((sum, review) => sum + parseInt(review.grade || 0), 0);
         const avgGrade = (totalGrade / siteReviews.length).toFixed(1);
         const avgGradeOutOf5 = Math.round(avgGrade / 2);
@@ -115,7 +107,6 @@ document.addEventListener('DOMContentLoaded', async () => {
           .map((_, i) => `<span class="star ${i < avgGradeOutOf5 ? 'filled' : ''}">★</span>`)
           .join('');
         
-        // Display average at the top
         reviewsContainer.innerHTML = `
           <div style="background: #222; padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 2px solid #ffb86b;">
             <div style="display: flex; align-items: center; gap: 20px;">
@@ -129,7 +120,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           </div>
         `;
         
-        // Display individual site reviews
+
         siteReviews.forEach(review => {
           const reviewEl = document.createElement('div');
           reviewEl.className = 'review';
@@ -142,19 +133,31 @@ document.addEventListener('DOMContentLoaded', async () => {
             .join('');
           
           const dateStr = new Date(review.created_at).toLocaleDateString();
+          const profilePic = review.profile_picture || 'profile.jpeg';
           
           reviewEl.innerHTML = `
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
-              <div>
-                <strong style="color: #fff; font-size: 1.1rem;">${review.username || 'Anonymous'}</strong>
-                <div style="color: #999; font-size: 0.9rem; margin-top: 4px;">${dateStr}</div>
-              </div>
-              <div style="text-align: right;">
-                <div style="color: #ffb86b; font-weight: 600; font-size: 1.2rem; margin-bottom: 4px;">${grade}/10</div>
-                <div style="color: #ffd166;">${starsHtml}</div>
+            <div style="display: flex; gap: 12px; margin-bottom: 10px;">
+              <a href="view_profile.php?user_id=${review.user_id}" style="flex-shrink: 0;">
+                <img src="${profilePic}" alt="${escapeHtml(review.username)}" 
+                  style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,0.1); cursor: pointer; transition: transform 0.2s;" 
+                  onerror="this.src='profile.jpeg'" 
+                  onmouseover="this.style.transform='scale(1.05)'" 
+                  onmouseout="this.style.transform='scale(1)'">
+              </a>
+              <div style="flex: 1;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                  <div>
+                    <a href="view_profile.php?user_id=${review.user_id}" style="color: #fff; font-size: 1.1rem; font-weight: 600; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#ff4444'" onmouseout="this.style.color='#fff'">${review.username || 'Anonymous'}</a>
+                    <div style="color: #999; font-size: 0.9rem; margin-top: 4px;">${dateStr}</div>
+                  </div>
+                  <div style="text-align: right;">
+                    <div style="color: #ffb86b; font-weight: 600; font-size: 1.2rem; margin-bottom: 4px;">${grade}/10</div>
+                    <div style="color: #ffd166;">${starsHtml}</div>
+                  </div>
+                </div>
+                ${review.review_text ? `<p style="color: #ddd; line-height: 1.5; margin-top: 10px;">${escapeHtml(review.review_text)}</p>` : ''}
               </div>
             </div>
-            ${review.review_text ? `<p style="color: #ddd; line-height: 1.5; margin-top: 10px;">${escapeHtml(review.review_text)}</p>` : ''}
           `;
           
           reviewsContainer.appendChild(reviewEl);
@@ -165,9 +168,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     }
         
-    // Load site reviews
+
     await loadSiteReviews();
-    // helper for POST JSON form-encoded
     async function postForm(url, data) {
       const form = new URLSearchParams();
       for (const k in data) form.append(k, data[k]);
@@ -175,14 +177,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       return res.json().catch(() => ({}));
     }
 
-    // escape HTML to prevent XSS
+    // escape HTML to prevent XSS - sugerata chat
     function escapeHtml(text) {
       const div = document.createElement('div');
       div.textContent = text;
       return div.innerHTML;
     }
 
-    // show simple modal
     function showModal(html) {
       const overlay = document.createElement('div');
       overlay.className = 'modal-overlay';
@@ -194,19 +195,16 @@ document.addEventListener('DOMContentLoaded', async () => {
       return { overlay, box };
     }
 
-    // favorite button handling
+
     const btnLovedEl = document.getElementById('btnLoved');
     btnLovedEl.addEventListener('click', async (e) => {
       const active = btnLovedEl.classList.toggle('active');
-      // if activated, add favorite; else remove
       if (active) {
         await postForm('add_favorite.php', { tmdb_id: id, title: details.title || '', poster: details.poster_path ? `${IMG_BASE}w342${details.poster_path}` : '' });
       } else {
         await postForm('remove_favorite.php', { tmdb_id: id });
       }
     });
-
-    // check and set initial favorite state
     (async () => {
       try {
         const res = await fetch('get_favorites.php', { credentials: 'same-origin' });
@@ -218,7 +216,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       } catch (e) { /* ignore */ }
     })();
 
-    // Check if user has already watched this film
+    // Cverifica daca filmul e deja vazut
     let userReview = null;
     try {
       const res = await fetch('get_user_review.php?tmdb_id=' + id, { credentials: 'same-origin' });
@@ -230,14 +228,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     } catch (e) { /* ignore */ }
 
-    // Helper function to format date for display (yyyy-mm-dd to dd/mm/yyyy)
+    // de la yyyy-mm-dd la dd/mm/yyyy
     function formatDateForDisplay(dateStr) {
       if (!dateStr) return '';
       const [year, month, day] = dateStr.split('-');
       return `${day}/${month}/${year}`;
     }
 
-    // Helper function to parse display date (dd/mm/yyyy to yyyy-mm-dd)
     function parseDateFromDisplay(dateStr) {
       if (!dateStr) return '';
       const parts = dateStr.split('/');
@@ -246,9 +243,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       return `${year}-${month}-${day}`;
     }
 
-    // watched button -> open modal to submit rating and review (or edit existing)
     document.getElementById('btnWatched').addEventListener('click', (e) => {
-      // Get today's date or existing watched date
       const defaultDate = userReview && userReview.watched_at ? userReview.watched_at.split(' ')[0] : new Date().toISOString().split('T')[0];
       const defaultDateDisplay = formatDateForDisplay(defaultDate);
       const defaultGrade = userReview ? userReview.grade : 5;
@@ -282,7 +277,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       const { overlay, box } = showModal(html);
       box.querySelector('#watched-cancel').addEventListener('click', () => overlay.remove());
       
-      // Add delete button handler if editing
       if (isEdit) {
         box.querySelector('#watched-delete').addEventListener('click', async () => {
           if (!confirm('Are you sure you want to delete this review? This will remove it from your watched list and recent activity.')) {
@@ -298,15 +292,13 @@ document.addEventListener('DOMContentLoaded', async () => {
           
           overlay.remove();
           
-          // Show success message
           const s = document.createElement('div');
           s.className = 'flash warning';
-          s.textContent = '🗑️ Review deleted successfully!';
+          s.textContent = 'Review deleted successfully!';
           document.body.appendChild(s);
           setTimeout(() => s.style.opacity = '0', 2000);
           setTimeout(() => s.remove(), 2600);
           
-          // Reset userReview and reload reviews
           userReview = null;
           btnWatched.textContent = 'Watched';
           btnWatched.style.background = '';
@@ -328,7 +320,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         const review = box.querySelector('#watched-review').value;
         const fav = box.querySelector('#watched-fav').checked ? 1 : 0;
         
-        // Save to database via save_review.php (editing mode - is_rewatch: 0)
         const saveRes = await postForm('save_review.php', {
           tmdb_id: id,
           title: details.title || '',
@@ -359,7 +350,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         overlay.remove();
         
-        // Show success message
         const s = document.createElement('div');
         s.className = 'flash success';
         s.textContent = isEdit ? '✅ Review updated!' : '✅ Review saved!';
@@ -367,20 +357,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         setTimeout(() => s.style.opacity = '0', 2000);
         setTimeout(() => s.remove(), 2600);
         
-        // Update userReview and reload reviews
         userReview = { watched: true, grade: grade, review_text: review, watched_at: watchedDate };
         loadSiteReviews();
       });
     });
 
-    // Add rewatch button next to watched button
     const btnWatched = document.getElementById('btnWatched');
     let btnRewatch = null;
     if (userReview) {
       btnWatched.textContent = 'Edit Review';
       btnWatched.style.background = '#456';
       
-      // Create rewatch button
       btnRewatch = document.createElement('button');
       btnRewatch.className = 'iconBtn';
       btnRewatch.textContent = 'Rewatch';
@@ -418,7 +405,6 @@ document.addEventListener('DOMContentLoaded', async () => {
           const grade = box.querySelector('#watched-grade').value;
           const review = box.querySelector('#watched-review').value;
           
-          // Save to database via save_review.php (rewatch mode - is_rewatch: 1)
           const saveRes = await postForm('save_review.php', {
             tmdb_id: id,
             title: details.title || '',
@@ -439,7 +425,6 @@ document.addEventListener('DOMContentLoaded', async () => {
           
           overlay.remove();
           
-          // Show success message
           const s = document.createElement('div');
           s.className = 'flash success';
           s.textContent = '🔄 Rewatch saved!';
@@ -447,15 +432,12 @@ document.addEventListener('DOMContentLoaded', async () => {
           setTimeout(() => s.style.opacity = '0', 2000);
           setTimeout(() => s.remove(), 2600);
           
-          // Reload reviews
           loadSiteReviews();
         });
       });
     }
 
-    // watchlist -> choose list to add
     document.getElementById('btnWatchlist').addEventListener('click', async (e) => {
-      // fetch user's lists
       let lists = [];
       try {
         const res = await fetch('get_lists.php', { credentials: 'same-origin' });
@@ -483,7 +465,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!name) return;
         postForm('create_list.php', { name }).then(j => {
           if (j.ok) {
-            // append to select
             const sel = box.querySelector('#select-list');
             const opt = document.createElement('option'); opt.value = j.list_id; opt.text = name; sel.appendChild(opt); sel.value = j.list_id;
           } else alert('Failed to create list');

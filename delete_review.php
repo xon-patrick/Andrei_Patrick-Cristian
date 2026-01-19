@@ -19,7 +19,6 @@ if ($tmdbId <= 0) {
 }
 
 try {
-    // Find the film
     $stmt = $pdo->prepare('SELECT film_id FROM films WHERE tmdb_id = ? LIMIT 1');
     $stmt->execute([$tmdbId]);
     $film = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -31,11 +30,9 @@ try {
     
     $filmId = (int)$film['film_id'];
     
-    // Delete all reviews for this user and film
     $stmt = $pdo->prepare('DELETE FROM reviews WHERE user_id = ? AND film_id = ?');
     $stmt->execute([$userId, $filmId]);
     
-    // Delete from watched table (removes from recent activity)
     $stmt = $pdo->prepare('DELETE FROM watched WHERE user_id = ? AND film_id = ?');
     $stmt->execute([$userId, $filmId]);
     

@@ -48,9 +48,17 @@ $quote = $quotes[array_rand($quotes)];
   <section class="popular">
     <h2>Trending</h2>
     <div class="movie-grid" id="movie-grid">
-      <!-- javascript -->
     </div>
   </section>
+
+  <?php if ($loggedIn): ?>
+  <section class="recent-activity">
+    <h2>Recent Activity from People You Follow</h2>
+    <div class="activity-container" id="activity-container">
+      <p class="loading">Loading activity...</p>
+    </div>
+  </section>
+  <?php endif; ?>
 
   <footer>
     © 2025 Journel.

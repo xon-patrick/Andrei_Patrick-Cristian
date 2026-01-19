@@ -1,4 +1,3 @@
-// UI helpers: render cards, placeholders, and utility functions.
 
 import { posters } from './api.js';
 
@@ -29,7 +28,6 @@ function createCardElement(movie, details = {}) {
     }
     directorEl.textContent = director;
 
-    // expose movie id for click handlers
     node.dataset.movieId = movie.id;
 
     return node;

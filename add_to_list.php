@@ -12,7 +12,6 @@ $poster = trim($_POST['poster'] ?? '');
 
 if ($list_id <= 0 || $tmdb_id <= 0) json_response(['error'=>'invalid_input']);
 
-// ensure list belongs to user
 $stmt = $pdo->prepare('SELECT id FROM lists WHERE id = ? AND user_id = ? LIMIT 1');
 $stmt->execute([$list_id, $userId]);
 if (!$stmt->fetch()) json_response(['error'=>'list_not_found']);
